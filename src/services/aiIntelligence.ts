@@ -1,4 +1,4 @@
-import { TranscriptUtterance, MeetingSummary, ActionItem, Priority } from '../types';
+import { TranscriptUtterance, MeetingSummary, ActionItem, Priority, PreMeetingBrief, Meeting } from '../types';
 
 export interface AIIntelligenceEngine {
   generateSummary(
@@ -17,6 +17,19 @@ export interface AIIntelligenceEngine {
     question: string,
     transcript: TranscriptUtterance[],
     summary: MeetingSummary
+  ): Promise<string>;
+
+  generatePreMeetingBrief(
+    meetingTitle: string,
+    templateId: string,
+    participants: string[],
+    agendaItems?: string[],
+    carryOverNotes?: string[]
+  ): Promise<PreMeetingBrief>;
+
+  queryAcrossAllMeetings(
+    question: string,
+    allMeetings: Meeting[]
   ): Promise<string>;
 }
 
@@ -224,6 +237,169 @@ export class MockAIProvider implements AIIntelligenceEngine {
 
     return `Summary of finding from meeting transcript: "${summary.overview}"\n\nIs there a specific detail regarding attendees, schedule, or financing you would like me to check?`;
   }
+
+  public async generatePreMeetingBrief(
+    meetingTitle: string,
+    templateId: string,
+    participants: string[],
+    agendaItems?: string[],
+    carryOverNotes?: string[]
+  ): Promise<PreMeetingBrief> {
+    const participantList = participants.length > 0 ? participants.join(', ') : 'Rad (BDM) & Counterparts';
+
+    if (templateId === 'client-discovery' || templateId === 're-client-discovery') {
+      return {
+        meetingTitle,
+        context: `High-value prospective property buyer consultation with ${participantList}. Meeting intent is to qualify investment capacity, target corridor (e.g. BGC, Makati, Cebu), and unit specifications.`,
+        keyObjectives: [
+          'Ascertain purchase intent: capital preservation, rental yield, or personal residence.',
+          'Identify specific budget bracket (TCP) and monthly equity amortization capacity.',
+          'Pinpoint deal breakers: view orientations, parking slot requirements, and turnover horizon.',
+        ],
+        potentialObjections: [
+          'Price per square meter comparison against secondary market resales.',
+          'Developer turnover delays or construction schedule risks.',
+          'Appraisal and association dues concerns.',
+        ],
+        suggestedQuestions: [
+          'What is your target investment horizon before you intend to flip or lease out the unit?',
+          'How do you plan to balance pre-selling equity vs bank take-out loan upon turnover?',
+          'What specific amenities or CBD proximities are non-negotiable for your family or tenants?',
+        ],
+        carryOverNotes: carryOverNotes || [],
+      };
+    }
+
+    if (templateId === 'site-viewing' || templateId === 're-site-viewing') {
+      return {
+        meetingTitle,
+        context: `On-site model unit walkthrough and development inspection with ${participantList}. The objective is to transition inspection interest into a formal unit hold request.`,
+        keyObjectives: [
+          'Guide walkthrough highlighting premium finishes, natural light, and double-glazed acoustics.',
+          'Present clear computation sheet illustrating equity payment milestones.',
+          'Secure a 72-hour priority reservation hold on preferred tower floor.',
+        ],
+        potentialObjections: [
+          'Room layout perception or bedroom storage volume.',
+          'Proximity of unit to elevator core or trash chute.',
+          'Estimated monthly association dues and property management track record.',
+        ],
+        suggestedQuestions: [
+          'How does this master layout compare with other developments you viewed this week?',
+          'Would you prefer morning sunrise exposure or sunset city skyline views?',
+        ],
+        carryOverNotes: carryOverNotes || [],
+      };
+    }
+
+    if (templateId === 'developer-broker-call' || templateId === 're-developer-broker-call' || templateId === 'developer-broker-alignment') {
+      return {
+        meetingTitle,
+        context: `Business development and broker partner alignment with ${participantList}. Finalize Q4 commission tiers, VIP holding blocks, and marketing co-op campaign.`,
+        keyObjectives: [
+          'Agree on 4.5% tiered commission structure with 50% advance release terms.',
+          'Lock priority inventory holds for top-producing agency buyers.',
+          'Coordinate joint open house tripping schedule for the CALAX corridor.',
+        ],
+        potentialObjections: [
+          'Commission disbursement delays from developer accounting.',
+          'Limited availability of 2-bedroom corner units.',
+        ],
+        suggestedQuestions: [
+          'What gross sales volume is your team targeting to qualify for the international incentive trip?',
+          'Which marketing collateral or CAD layouts does your sales team need expedited?',
+        ],
+        carryOverNotes: carryOverNotes || [],
+      };
+    }
+
+    // Default executive pre-meeting brief
+    return {
+      meetingTitle,
+      context: `Executive session with ${participantList}. Focus on clear alignment, decision making, and measurable deliverables.`,
+      keyObjectives: [
+        'Review progress against agreed milestones.',
+        'Resolve active blockers and operational constraints.',
+        'Confirm accountable owners and due dates for pending action items.',
+      ],
+      potentialObjections: [
+        'Resource bandwidth constraints.',
+        'Dependency delays across external stakeholders.',
+      ],
+      suggestedQuestions: [
+        'What is the single biggest roadblock preventing us from closing this milestone on time?',
+        'What decisions require management approval today?',
+      ],
+      carryOverNotes: carryOverNotes || [],
+    };
+  }
+
+  public async queryAcrossAllMeetings(
+    question: string,
+    allMeetings: Meeting[]
+  ): Promise<string> {
+    const q = question.toLowerCase();
+
+    if (q.includes('bgc') || q.includes('bonifacio') || q.includes('condo') || q.includes('shang') || q.includes('aurelia')) {
+      const matches = allMeetings.filter(
+        (m) =>
+          m.title.toLowerCase().includes('bgc') ||
+          m.summary.overview.toLowerCase().includes('bgc') ||
+          m.summary.realEstateMetrics?.location?.toLowerCase().includes('bgc')
+      );
+      if (matches.length > 0) {
+        return `Found **${matches.length} meeting(s)** involving BGC luxury condo developments:\n` +
+          matches
+            .map(
+              (m) =>
+                `• **${m.title}** (${new Date(m.createdAt).toLocaleDateString()})\n  - Budget/TCP: ${m.summary.realEstateMetrics?.budgetRange || 'PHP 32M - 40M'}\n  - Overview: ${m.summary.overview}`
+            )
+            .join('\n\n');
+      }
+    }
+
+    if (q.includes('broker') || q.includes('commission') || q.includes('carlos') || q.includes('incentive')) {
+      const brokerMeetings = allMeetings.filter(
+        (m) =>
+          m.channelId === 'broker-network' ||
+          m.summary.overview.toLowerCase().includes('broker') ||
+          m.title.toLowerCase().includes('broker')
+      );
+      if (brokerMeetings.length > 0) {
+        return `Found **${brokerMeetings.length} broker partnership meeting(s)**:\n` +
+          brokerMeetings
+            .map(
+              (m) =>
+                `• **${m.title}**\n  - Commission Agreement: ${m.summary.realEstateMetrics?.commissionNotes || '4.5% commission with 50% advance release'}\n  - Key Points: ${m.summary.keyDiscussionPoints.slice(0, 2).join('; ')}`
+            )
+            .join('\n\n');
+      }
+    }
+
+    if (q.includes('action') || q.includes('pending') || q.includes('task') || q.includes('todo') || q.includes('deliverable')) {
+      const allActions = allMeetings.flatMap((m) => m.actionItems);
+      const pending = allActions.filter((a) => a.status !== 'completed');
+      return `Across all meetings, there are **${pending.length} pending action items**:\n` +
+        pending
+          .slice(0, 6)
+          .map((a) => `• [${a.priority.toUpperCase()}] **${a.title}** — Assignee: ${a.assignee} (Due: ${a.dueDate})`)
+          .join('\n');
+    }
+
+    if (q.includes('summary') || q.includes('overview') || q.includes('deal') || q.includes('pipeline')) {
+      return `**Tala Real Estate Executive Summary Across ${allMeetings.length} Meeting(s)**:\n` +
+        `• Total pipeline volume: BGC Luxury Residences (Shang, Aurelia) & Southern Luzon Commercial Lots (Nuvali/Vermosa).\n` +
+        `• Active deals: 2 pre-selling consultations, 1 commercial broker agreement.\n` +
+        `• Open action items: ${allMeetings.flatMap((m) => m.actionItems).filter((a) => a.status !== 'completed').length} pending deliverables.`;
+    }
+
+    return `Across your meeting library of **${allMeetings.length} meetings**, I searched for "${question}".\n\n` +
+      `Relevant insights:\n` +
+      allMeetings
+        .slice(0, 3)
+        .map((m) => `• **${m.title}**: ${m.summary.overview.slice(0, 140)}...`)
+        .join('\n');
+  }
 }
 
 export class FleetAIProvider implements AIIntelligenceEngine {
@@ -287,6 +463,23 @@ ${transcript.map((u) => `${u.speaker}: ${u.text}`).join('\n')}`;
   ): Promise<string> {
     return this.fallback.askAssistant(question, transcript, summary);
   }
+
+  public async generatePreMeetingBrief(
+    meetingTitle: string,
+    templateId: string,
+    participants: string[],
+    agendaItems?: string[],
+    carryOverNotes?: string[]
+  ): Promise<PreMeetingBrief> {
+    return this.fallback.generatePreMeetingBrief(meetingTitle, templateId, participants, agendaItems, carryOverNotes);
+  }
+
+  public async queryAcrossAllMeetings(
+    question: string,
+    allMeetings: Meeting[]
+  ): Promise<string> {
+    return this.fallback.queryAcrossAllMeetings(question, allMeetings);
+  }
 }
 
 export function getAIIntelligenceEngine(provider: string): AIIntelligenceEngine {
@@ -295,3 +488,56 @@ export function getAIIntelligenceEngine(provider: string): AIIntelligenceEngine 
   }
   return new MockAIProvider();
 }
+
+export async function generatePreMeetingBrief(
+  meeting: Meeting,
+  agenda?: any
+): Promise<PreMeetingBrief> {
+  const engine = getAIIntelligenceEngine('fleet');
+  const agendaTitles = agenda && Array.isArray(agenda.items) ? agenda.items.map((i: any) => i.title) : [];
+  const carryOverNotes = agenda && Array.isArray(agenda.items)
+    ? agenda.items
+        .filter((i: any) => i.carryOverHistory && i.carryOverHistory.carryOverCount > 0)
+        .map((i: any) => `${i.title} (carried over ${i.carryOverHistory?.carryOverCount}x)`)
+    : [];
+
+  const brief = await engine.generatePreMeetingBrief(
+    meeting.title,
+    meeting.templateId,
+    meeting.participants,
+    agendaTitles,
+    carryOverNotes
+  );
+
+  return {
+    ...brief,
+    generatedAt: new Date().toISOString(),
+    contextOverview: brief.context,
+    recommendedTalkingPoints: brief.suggestedQuestions || [],
+    riskFactors: brief.potentialObjections || [],
+  };
+}
+
+export async function queryAcrossAllMeetings(
+  question: string,
+  allMeetings: Meeting[]
+): Promise<{ answer: string; sources: Meeting[] }> {
+  const engine = getAIIntelligenceEngine('fleet');
+  const answer = await engine.queryAcrossAllMeetings(question, allMeetings);
+
+  const qLower = question.toLowerCase();
+  const sources = allMeetings.filter(
+    (m) =>
+      m.title.toLowerCase().includes(qLower) ||
+      m.summary.overview.toLowerCase().includes(qLower) ||
+      m.tags.some((t) => t.toLowerCase().includes(qLower)) ||
+      (m.summary.realEstateMetrics?.location &&
+        m.summary.realEstateMetrics.location.toLowerCase().includes(qLower))
+  ).slice(0, 3);
+
+  return {
+    answer,
+    sources: sources.length > 0 ? sources : allMeetings.slice(0, 2),
+  };
+}
+

@@ -1,5 +1,5 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { Meeting, Channel, ActionItem, TalaSettings } from '../types';
+import { Meeting, Channel, ActionItem, TalaSettings, NoteVersion, AuditLogEntry } from '../types';
 import { DEFAULT_LANGUAGE_CODE } from '../languages/languages';
 
 interface TalaDB extends DBSchema {
@@ -23,6 +23,22 @@ interface TalaDB extends DBSchema {
       'by-status': string;
     };
   };
+  versions: {
+    key: string;
+    value: NoteVersion;
+    indexes: {
+      'by-meeting': string;
+      'by-timestamp': string;
+    };
+  };
+  auditLogs: {
+    key: string;
+    value: AuditLogEntry;
+    indexes: {
+      'by-timestamp': string;
+      'by-meeting': string;
+    };
+  };
   settings: {
     key: string;
     value: TalaSettings;
@@ -30,7 +46,7 @@ interface TalaDB extends DBSchema {
 }
 
 const DB_NAME = 'tala_ai_meetings_db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export const DEFAULT_CHANNELS: Channel[] = [
   {
@@ -89,6 +105,18 @@ export function getDb(): Promise<IDBPDatabase<TalaDB>> {
           const actionStore = db.createObjectStore('actionItems', { keyPath: 'id' });
           actionStore.createIndex('by-meeting', 'meetingId');
           actionStore.createIndex('by-status', 'status');
+        }
+
+        if (!db.objectStoreNames.contains('versions')) {
+          const versionStore = db.createObjectStore('versions', { keyPath: 'id' });
+          versionStore.createIndex('by-meeting', 'meetingId');
+          versionStore.createIndex('by-timestamp', 'timestamp');
+        }
+
+        if (!db.objectStoreNames.contains('auditLogs')) {
+          const auditStore = db.createObjectStore('auditLogs', { keyPath: 'id' });
+          auditStore.createIndex('by-timestamp', 'timestamp');
+          auditStore.createIndex('by-meeting', 'meetingId');
         }
 
         if (!db.objectStoreNames.contains('settings')) {
@@ -212,6 +240,64 @@ export async function getSettings(): Promise<TalaSettings> {
 export async function saveSettings(settings: TalaSettings): Promise<void> {
   const db = await getDb();
   await db.put('settings', settings, 'current');
+}
+
+export async function saveAuditLog(entry: AuditLogEntry): Promise<void> {
+  const db = await getDb();
+  await db.put('auditLogs', entry);
+}
+
+export async function getAllAuditLogs(): Promise<AuditLogEntry[]> {
+  const db = await getDb();
+  const logs = await db.getAllFromIndex('auditLogs', 'by-timestamp');
+  return logs.reverse(); // newest first
+}
+
+export async function saveNoteVersion(version: NoteVersion): Promise<void> {
+  const db = await getDb();
+  await db.put('versions', version);
+
+  // Also sync in meeting record
+  const meeting = await db.get('meetings', version.meetingId);
+  if (meeting) {
+    const existing = meeting.versions || [];
+    meeting.versions = [version, ...existing.slice(0, 19)]; // keep up to 20 versions
+    await db.put('meetings', meeting);
+  }
+}
+
+export async function getNoteVersions(meetingId: string): Promise<NoteVersion[]> {
+  const db = await getDb();
+  const versions = await db.getAllFromIndex('versions', 'by-meeting', meetingId);
+  return versions.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+}
+
+export async function purgeExpiredMeetings(retentionDays: number): Promise<number> {
+  if (retentionDays <= 0) return 0;
+  const db = await getDb();
+  const all = await db.getAll('meetings');
+  const cutoffTime = Date.now() - retentionDays * 24 * 60 * 60 * 1000;
+
+  let purgedCount = 0;
+  for (const m of all) {
+    const meetingTime = new Date(m.createdAt).getTime();
+    if (meetingTime < cutoffTime) {
+      await deleteMeeting(m.id);
+      purgedCount++;
+    }
+  }
+
+  if (purgedCount > 0) {
+    await saveAuditLog({
+      id: `audit-purge-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      eventType: 'retention_purged',
+      details: `Purged ${purgedCount} meeting(s) older than ${retentionDays} day(s) retention threshold.`,
+      actor: 'System Auto-Purge',
+    });
+  }
+
+  return purgedCount;
 }
 
 export function searchMeetings(meetings: Meeting[], query: string, channelId?: string): Meeting[] {

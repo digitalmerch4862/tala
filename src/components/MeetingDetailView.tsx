@@ -26,8 +26,13 @@ import {
   DollarSign,
   AlertCircle,
 } from 'lucide-react';
-import { Meeting, ActionItem, ActionItemStatus, Priority, TranscriptUtterance } from '../types';
+import { Meeting, ActionItem, ActionItemStatus, Priority, TranscriptUtterance, TalaSettings } from '../types';
 import { getAIIntelligenceEngine } from '../services/aiIntelligence';
+import { AgendaEditorView } from './AgendaEditorView';
+import { VersionHistoryModal } from './VersionHistoryModal';
+import { RedactionModal } from './RedactionModal';
+import { ShareExportModal } from './ShareExportModal';
+import { History, ShieldAlert, ListOrdered } from 'lucide-react';
 
 interface MeetingDetailViewProps {
   meeting: Meeting;
@@ -35,9 +40,10 @@ interface MeetingDetailViewProps {
   onUpdateMeeting: (meeting: Meeting) => void;
   onDeleteMeeting: (meetingId: string) => void;
   llmProvider: string;
+  settings?: TalaSettings;
 }
 
-export type DetailTab = 'summary' | 'transcript' | 'actions' | 'chat';
+export type DetailTab = 'summary' | 'agenda' | 'transcript' | 'actions' | 'chat';
 
 export const MeetingDetailView: React.FC<MeetingDetailViewProps> = ({
   meeting,
@@ -45,11 +51,17 @@ export const MeetingDetailView: React.FC<MeetingDetailViewProps> = ({
   onUpdateMeeting,
   onDeleteMeeting,
   llmProvider,
+  settings,
 }) => {
   const [activeTab, setActiveTab] = useState<DetailTab>('summary');
   const [copiedText, setCopiedText] = useState(false);
   const [transcriptSearch, setTranscriptSearch] = useState('');
   const [selectedSpeakerFilter, setSelectedSpeakerFilter] = useState('all');
+
+  // Modal states
+  const [isVersionModalOpen, setIsVersionModalOpen] = useState(false);
+  const [isRedactionModalOpen, setIsRedactionModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Audio Playback simulation
   const [isPlaying, setIsPlaying] = useState(false);
@@ -292,6 +304,33 @@ export const MeetingDetailView: React.FC<MeetingDetailViewProps> = ({
         {/* Action Buttons */}
         <div className="flex items-center space-x-2 shrink-0">
           <button
+            onClick={() => setIsRedactionModalOpen(true)}
+            data-testid="redact-transcript-btn"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-amber-200 rounded-lg text-xs font-medium border border-slate-700 transition"
+          >
+            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+            <span>Redact</span>
+          </button>
+
+          <button
+            onClick={() => setIsVersionModalOpen(true)}
+            data-testid="version-history-btn"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-medium border border-slate-700 transition"
+          >
+            <History className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Versions</span>
+          </button>
+
+          <button
+            onClick={() => setIsShareModalOpen(true)}
+            data-testid="share-export-btn"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-medium border border-slate-700 transition"
+          >
+            <Share2 className="w-3.5 h-3.5 text-blue-400" />
+            <span>Share & CRM</span>
+          </button>
+
+          <button
             onClick={handleCopyMarkdown}
             data-testid="copy-markdown-btn"
             className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-medium border border-slate-700 transition"
@@ -401,6 +440,19 @@ export const MeetingDetailView: React.FC<MeetingDetailViewProps> = ({
         >
           <Sparkles className="w-4 h-4" />
           <span>Executive Summary & Brief</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('agenda')}
+          data-testid="tab-agenda-btn"
+          className={`py-3 text-xs font-semibold border-b-2 transition-all flex items-center space-x-2 ${
+            activeTab === 'agenda'
+              ? 'border-brand-500 text-brand-400'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <ListOrdered className="w-4 h-4" />
+          <span>Agenda & Pre-Brief</span>
         </button>
 
         <button
@@ -870,7 +922,43 @@ export const MeetingDetailView: React.FC<MeetingDetailViewProps> = ({
             </form>
           </div>
         )}
+
+        {/* TAB 5: AGENDA & PRE-BRIEF */}
+        {activeTab === 'agenda' && (
+          <AgendaEditorView meeting={meeting} onUpdateMeeting={onUpdateMeeting} />
+        )}
       </div>
+
+      {/* Modals */}
+      <VersionHistoryModal
+        isOpen={isVersionModalOpen}
+        onClose={() => setIsVersionModalOpen(false)}
+        meeting={meeting}
+        onRestoreVersion={(restored) => onUpdateMeeting(restored)}
+      />
+
+      <RedactionModal
+        isOpen={isRedactionModalOpen}
+        onClose={() => setIsRedactionModalOpen(false)}
+        meeting={meeting}
+        onUpdateMeeting={onUpdateMeeting}
+      />
+
+      <ShareExportModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        meeting={meeting}
+        settings={
+          settings || {
+            defaultLanguage: 'fil-PH',
+            theme: 'dark',
+            llmProvider: 'fleet',
+            transcriptionProvider: 'browser_speech',
+            privacyMode: true,
+            retentionDays: 90,
+          }
+        }
+      />
     </div>
   );
 };

@@ -9,14 +9,17 @@ import {
   deleteMeeting,
   updateActionItemStatus,
   saveSettings,
+  purgeExpiredMeetings,
 } from './services/storage';
 import { Sidebar, MainView } from './components/Sidebar';
 import { MeetingLibrary } from './components/MeetingLibrary';
 import { MeetingDetailView } from './components/MeetingDetailView';
 import { ActionItemsView } from './components/ActionItemsView';
 import { TemplatesView } from './components/TemplatesView';
+import { GlobalChatView } from './components/GlobalChatView';
 import { MeetingRecorderModal } from './components/MeetingRecorderModal';
 import { AudioUploadModal } from './components/AudioUploadModal';
+import { CalendarImportModal } from './components/CalendarImportModal';
 import { SettingsModal } from './components/SettingsModal';
 
 export const App: React.FC = () => {
@@ -31,11 +34,14 @@ export const App: React.FC = () => {
     llmProvider: 'fleet',
     transcriptionProvider: 'browser_speech',
     privacyMode: true,
+    retentionDays: 90,
+    autoPurgeEnabled: false,
   });
 
   // Modals state
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   // Pre-selected template for modals
@@ -45,10 +51,13 @@ export const App: React.FC = () => {
     (async () => {
       try {
         await initStorage();
-        const [loadedMeetings, loadedChannels, loadedSettings] = await Promise.all([
+        const loadedSettings = await getSettings();
+        if (loadedSettings.autoPurgeEnabled && loadedSettings.retentionDays > 0) {
+          await purgeExpiredMeetings(loadedSettings.retentionDays);
+        }
+        const [loadedMeetings, loadedChannels] = await Promise.all([
           getAllMeetings(),
           getAllChannels(),
-          getSettings(),
         ]);
         setMeetings(loadedMeetings);
         setChannels(loadedChannels);
@@ -141,6 +150,7 @@ export const App: React.FC = () => {
           setPreselectedTemplateId(undefined);
           setIsUploadModalOpen(true);
         }}
+        onOpenCalendarModal={() => setIsCalendarModalOpen(true)}
         onOpenSettingsModal={() => setIsSettingsModalOpen(true)}
       />
 
@@ -153,6 +163,7 @@ export const App: React.FC = () => {
             onUpdateMeeting={handleUpdateMeeting}
             onDeleteMeeting={handleDeleteMeeting}
             llmProvider={settings.llmProvider}
+            settings={settings}
           />
         ) : currentView === 'library' ? (
           <MeetingLibrary
@@ -170,12 +181,23 @@ export const App: React.FC = () => {
               setPreselectedTemplateId(undefined);
               setIsUploadModalOpen(true);
             }}
+            onOpenCalendarModal={() => setIsCalendarModalOpen(true)}
           />
         ) : currentView === 'actions' ? (
           <ActionItemsView
             actionItems={allActionItems}
             meetings={meetings}
             onToggleStatus={handleToggleActionStatus}
+            onOpenMeeting={(meetingId) => {
+              const target = meetings.find((m) => m.id === meetingId);
+              if (target) {
+                setActiveMeeting(target);
+              }
+            }}
+          />
+        ) : currentView === 'global_chat' ? (
+          <GlobalChatView
+            meetings={meetings}
             onOpenMeeting={(meetingId) => {
               const target = meetings.find((m) => m.id === meetingId);
               if (target) {
@@ -209,6 +231,14 @@ export const App: React.FC = () => {
         onMeetingCreated={handleMeetingCreated}
         llmProvider={settings.llmProvider}
         transcriptionProvider={settings.transcriptionProvider}
+      />
+
+      <CalendarImportModal
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+        onImportMeeting={handleMeetingCreated}
+        channelId={selectedChannelId === 'all' ? channels[0]?.id : selectedChannelId}
+        channelName={channels.find((c) => c.id === selectedChannelId)?.name}
       />
 
       <SettingsModal

@@ -26,6 +26,7 @@ interface MeetingLibraryProps {
   onDeleteMeeting: (meetingId: string) => void;
   onOpenRecordModal: () => void;
   onOpenUploadModal: () => void;
+  onOpenCalendarModal?: () => void;
 }
 
 export const MeetingLibrary: React.FC<MeetingLibraryProps> = ({
@@ -37,6 +38,7 @@ export const MeetingLibrary: React.FC<MeetingLibraryProps> = ({
   onDeleteMeeting,
   onOpenRecordModal,
   onOpenUploadModal,
+  onOpenCalendarModal,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -113,6 +115,16 @@ export const MeetingLibrary: React.FC<MeetingLibraryProps> = ({
             <Upload className="w-3.5 h-3.5" />
             <span>Upload File</span>
           </button>
+          {onOpenCalendarModal && (
+            <button
+              onClick={onOpenCalendarModal}
+              data-testid="import-ics-btn"
+              className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-medium border border-slate-700 transition"
+            >
+              <Calendar className="w-3.5 h-3.5 text-blue-400" />
+              <span>Import .ICS</span>
+            </button>
+          )}
         </div>
       </header>
 

@@ -1,3 +1,5 @@
+import { Agenda } from '../prep/types/agenda';
+
 export type MeetingStatus = 'recorded' | 'uploaded' | 'transcribing' | 'completed';
 
 export type Priority = 'low' | 'medium' | 'high';
@@ -13,6 +15,61 @@ export interface ActionItem {
   priority: Priority;
   status: ActionItemStatus;
   createdAt: string;
+}
+
+export interface NoteVersion {
+  id: string;
+  meetingId: string;
+  versionNumber: number;
+  timestamp: string;
+  author: string;
+  title: string;
+  summary: MeetingSummary;
+  actionItems: ActionItem[];
+  changeDescription: string;
+}
+
+export interface PreMeetingBrief {
+  meetingTitle: string;
+  context: string;
+  keyObjectives: string[];
+  potentialObjections: string[];
+  suggestedQuestions: string[];
+  carryOverNotes?: string[];
+  generatedAt?: string;
+  contextOverview?: string;
+  recommendedTalkingPoints?: string[];
+  riskFactors?: string[];
+}
+
+export interface AuditLogEntry {
+  id: string;
+  timestamp: string;
+  eventType:
+    | 'meeting_created'
+    | 'meeting_recorded'
+    | 'meeting_uploaded'
+    | 'note_edited'
+    | 'version_restored'
+    | 'transcript_redacted'
+    | 'meeting_deleted'
+    | 'export_generated'
+    | 'retention_purged'
+    | 'webhook_dispatched'
+    | 'policy_updated';
+  meetingId?: string;
+  meetingTitle?: string;
+  details: string;
+  actor: string;
+}
+
+export interface WebhookConfig {
+  url: string;
+  secretHeader?: string;
+  secretToken?: string;
+  enabled: boolean;
+  lastTriggered?: string;
+  lastStatus?: string;
 }
 
 export interface TranscriptUtterance {
@@ -62,6 +119,10 @@ export interface Meeting {
   actionItems: ActionItem[];
   tags: string[];
   isOffTheRecord?: boolean;
+  agenda?: Agenda;
+  preMeetingBrief?: PreMeetingBrief;
+  versions?: NoteVersion[];
+  redactedPhrases?: string[];
 }
 
 export interface Channel {
@@ -95,6 +156,8 @@ export interface TalaSettings {
   llmProvider: 'fleet' | 'local' | 'mock' | 'gemini';
   transcriptionProvider: 'browser_speech' | 'fleet_whisper' | 'mock';
   apiKey?: string;
-  retentionDays?: number;
-  privacyMode: boolean; // no training on data
+  retentionDays: number;
+  privacyMode: boolean; // no training on user data
+  webhookConfig?: WebhookConfig;
+  autoPurgeEnabled?: boolean;
 }

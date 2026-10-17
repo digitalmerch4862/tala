@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { Channel } from '../types';
 
-export type MainView = 'library' | 'actions' | 'templates';
+export type MainView = 'library' | 'actions' | 'templates' | 'global_chat';
 
 interface SidebarProps {
   currentView: MainView;
@@ -25,6 +25,7 @@ interface SidebarProps {
   pendingActionsCount: number;
   onOpenRecordModal: () => void;
   onOpenUploadModal: () => void;
+  onOpenCalendarModal: () => void;
   onOpenSettingsModal: () => void;
 }
 
@@ -38,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   pendingActionsCount,
   onOpenRecordModal,
   onOpenUploadModal,
+  onOpenCalendarModal,
   onOpenSettingsModal,
 }) => {
   return (
@@ -79,6 +81,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <Upload className="w-3.5 h-3.5 text-slate-400" />
           <span>Upload Audio / Video</span>
         </button>
+
+        <button
+          onClick={onOpenCalendarModal}
+          data-testid="import-calendar-btn"
+          className="w-full flex items-center justify-center space-x-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 active:bg-slate-800/80 text-slate-200 hover:text-white rounded-xl text-xs font-medium border border-slate-700/60 transition-all cursor-pointer"
+        >
+          <Calendar className="w-3.5 h-3.5 text-blue-400" />
+          <span>Import Calendar (.ics)</span>
+        </button>
       </div>
 
       {/* Main Navigation */}
@@ -102,6 +113,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/40">
             {meetingsCount}
           </span>
+        </button>
+
+        <button
+          onClick={() => onNavigate('global_chat')}
+          data-testid="nav-global-chat-btn"
+          className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+            currentView === 'global_chat'
+              ? 'bg-slate-800 text-white font-semibold'
+              : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-brand-400" />
+          <span>Ask AI Assistant</span>
         </button>
 
         <button

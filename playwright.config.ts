@@ -6,14 +6,14 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
-    permissions: ['microphone'],
+    permissions: ['microphone', 'clipboard-read', 'clipboard-write'],
   },
   projects: [
     {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        permissions: ['microphone'],
+        permissions: ['microphone', 'clipboard-read', 'clipboard-write'],
         launchOptions: {
           executablePath: process.env.CHROMIUM_BIN || undefined,
           args: [

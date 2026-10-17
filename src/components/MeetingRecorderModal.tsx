@@ -433,6 +433,7 @@ export const MeetingRecorderModal: React.FC<MeetingRecorderModalProps> = ({
                 {recorderState === 'recording' ? (
                   <button
                     onClick={handlePause}
+                    data-testid="modal-pause-recording-btn"
                     className="flex items-center space-x-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium border border-slate-700 transition"
                   >
                     <Pause className="w-3.5 h-3.5" />
@@ -441,6 +442,7 @@ export const MeetingRecorderModal: React.FC<MeetingRecorderModalProps> = ({
                 ) : (
                   <button
                     onClick={handleResume}
+                    data-testid="modal-resume-recording-btn"
                     className="flex items-center space-x-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium border border-slate-700 transition"
                   >
                     <Play className="w-3.5 h-3.5" />
