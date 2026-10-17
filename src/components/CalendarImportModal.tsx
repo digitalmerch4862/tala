@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
-import { X, Calendar, Upload, FileText, Check, AlertCircle, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Calendar, Upload, Check, AlertCircle, Plus, RefreshCw, Link2 } from 'lucide-react';
 import { parseICS, ParsedICSEvent } from '../services/integrations';
+import {
+  ComposioCalendarEvent,
+  fetchUpcomingCalendarEvents,
+  linkCalendarEventToMeeting,
+  requestLinkCalendarEvent,
+} from '../services/composioCalendar';
 import { Meeting } from '../types';
 
 interface CalendarImportModalProps {
@@ -23,7 +29,39 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
   const [selectedEventIndex, setSelectedEventIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Composio Google Calendar server-side state
+  const [syncEnabled, setSyncEnabled] = useState(false);
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [composioEvents, setComposioEvents] = useState<ComposioCalendarEvent[]>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadComposioCalendar();
+    }
+  }, [isOpen]);
+
+  const loadComposioCalendar = async () => {
+    setSyncLoading(true);
+    try {
+      const res = await fetchUpcomingCalendarEvents();
+      setSyncEnabled(res.enabled);
+      setComposioEvents(res.events || []);
+    } catch {
+      setSyncEnabled(false);
+      setComposioEvents([]);
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
+
+  const handleLinkComposioEvent = async (ev: ComposioCalendarEvent) => {
+    const newMeeting = linkCalendarEventToMeeting(ev);
+    await requestLinkCalendarEvent(ev.id, newMeeting.id);
+    onImportMeeting(newMeeting);
+    onClose();
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -69,18 +107,18 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
       participants: ev.attendees.length > 0 ? ev.attendees : ['Rad (BDM)', 'Prospective Buyer'],
       language: 'fil-PH (Tagalog / English)',
       summary: {
-        overview: ev.description || `Scheduled calendar meeting: ${ev.title}. Location: ${ev.location || 'Remote/Office'}`,
+        overview:
+          ev.description ||
+          `Scheduled calendar meeting: ${ev.title}. Location: ${ev.location || 'Remote/Office'}`,
         keyDiscussionPoints: [
           `Meeting scheduled via Calendar import.`,
           ev.location ? `Location: ${ev.location}` : 'Online conference',
-          `Duration planned: ${ev.durationMinutes} minutes.`
+          `Duration planned: ${ev.durationMinutes} minutes.`,
         ],
-        decisionsMade: [
-          'Meeting agenda established from imported calendar booking.'
-        ],
+        decisionsMade: ['Meeting agenda established from imported calendar booking.'],
         nextSteps: [
           'Conduct face-to-face discovery meeting.',
-          'Record and summarize key discussion points.'
+          'Record and summarize key discussion points.',
         ],
         realEstateMetrics: {
           location: ev.location || 'Metro Manila',
@@ -121,7 +159,10 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden" data-testid="calendar-import-modal">
+      <div
+        className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
+        data-testid="calendar-import-modal"
+      >
         {/* Header */}
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
@@ -129,17 +170,98 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
               <Calendar className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">Import Calendar (.ics)</h2>
-              <p className="text-[11px] text-slate-400">Import Google Calendar, Outlook, or Apple iCal events.</p>
+              <h2 className="text-sm font-bold text-white">Google Calendar Sync & .ICS Import</h2>
+              <p className="text-[11px] text-slate-400">
+                Sync via server-side Composio (`googlecalendar`) or import local `.ics` files.
+              </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
+          <button
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-4 space-y-4 overflow-y-auto">
+          {/* Composio Google Calendar Live Sync Section */}
+          <div
+            className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5"
+            data-testid="composio-calendar-section"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-bold text-white">
+                  Google Calendar (Composio Server-Side)
+                </span>
+                <span
+                  data-testid="calendar-sync-status-badge"
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border ${
+                    syncEnabled
+                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                      : 'bg-slate-800 text-slate-400 border-slate-700'
+                  }`}
+                >
+                  {syncLoading
+                    ? 'Checking...'
+                    : syncEnabled
+                    ? 'Calendar sync active'
+                    : 'Calendar sync off'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={loadComposioCalendar}
+                data-testid="refresh-composio-calendar-btn"
+                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+                title="Refresh Calendar Sync"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${syncLoading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
+
+            {syncEnabled && composioEvents.length > 0 ? (
+              <div className="space-y-2" data-testid="composio-events-list">
+                <p className="text-[11px] text-slate-400">
+                  Upcoming Google Calendar events — click to link title, attendees, and time into Tala:
+                </p>
+                {composioEvents.map((ev, idx) => (
+                  <div
+                    key={ev.id}
+                    data-testid={`composio-event-${idx}`}
+                    className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-3"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold text-white truncate">{ev.title}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">
+                        {new Date(ev.startTime).toLocaleString()} • {ev.durationMinutes} mins
+                        {ev.location ? ` • ${ev.location}` : ''}
+                      </div>
+                      <div className="text-[10px] text-slate-500 truncate">
+                        Attendees: {ev.attendees.join(', ')}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleLinkComposioEvent(ev)}
+                      data-testid={`link-composio-event-${idx}`}
+                      className="flex items-center space-x-1 px-2.5 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-[11px] font-semibold shrink-0 transition"
+                    >
+                      <Link2 className="w-3 h-3" />
+                      <span>Link Event</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[11px] text-slate-400">
+                Server-side `/api/calendar` sync is currently off (`COMPOSIO_API_KEY` not set). Local-first `.ics` import remains active below.
+              </p>
+            )}
+          </div>
+
           {/* File Upload / Paste */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5">
@@ -164,7 +286,9 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
               <div className="w-full border-t border-slate-800" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-slate-900 px-2 text-slate-500 uppercase text-[10px] font-bold">Or Paste Raw ICS</span>
+              <span className="bg-slate-900 px-2 text-slate-500 uppercase text-[10px] font-bold">
+                Or Paste Raw ICS
+              </span>
             </div>
           </div>
 

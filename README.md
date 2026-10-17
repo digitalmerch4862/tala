@@ -58,20 +58,45 @@ Engineered specifically around Philippine real estate workflows (pre-selling dev
 - **Outbound Webhook Dispatcher**: Push real-time meeting payloads directly to custom automation endpoints (Zapier, Make, n8n, internal CRM).
 - **Notion & Confluence Markdown**: Copy richly formatted Markdown tables and checklist tasks.
 
+- **Google Calendar Sync via Composio (`/api/calendar`)**: Server-side Vercel function that connects to the active Composio `googlecalendar` toolkit to list upcoming events, link calendar events to Tala meetings (title, attendees, time), and schedule follow-up meetings. When `COMPOSIO_API_KEY` is absent, the UI displays `"Calendar sync off"` and local-first `.ics` import continues working seamlessly.
+
+---
+
+## 📅 Google Calendar via Composio (`/api/calendar`)
+
+Tala AI integrates with Google Calendar through a thin Vercel serverless route (`api/calendar.ts`) backed by the Composio `googlecalendar` toolkit:
+- **Server-Side Only**: The browser talks exclusively to `/api/calendar`. No API key or secret is ever exposed to the client.
+- **Environment Variable**: Set `COMPOSIO_API_KEY` in the Vercel project environment settings.
+- **Supported Operations**:
+  1. **List Upcoming Events** (`GOOGLECALENDAR_FIND_EVENT`)
+  2. **Create Follow-Up Meeting Event** (`GOOGLECALENDAR_CREATE_EVENT`)
+  3. **Link Calendar Event to Tala Meeting** (synchronizes event title, attendee roster, and scheduled time)
+- **Local-First Fallback**: When `/api/calendar` or `COMPOSIO_API_KEY` is absent, Tala displays `"Calendar sync off"` and RFC 5545 `.ics` file/paste import works offline.
+
 ---
 
 ## 🔑 "Needs Keys" Live Sync Adapters (Zero-Fake Policy)
 
-In accordance with enterprise security standards and zero-fake policy, live bidirectional cloud synchronization requires registered organization credentials. Tala AI implements clean adapter interfaces, configuration schemas, and tests, but **explicitly marks live third-party sync adapters as "Needs Keys" in both the UI and documentation**:
+In accordance with enterprise security standards and zero-fake policy, live bidirectional cloud synchronization for external CRMs and meeting bots requires registered organization credentials. Tala AI implements clean adapter interfaces, configuration schemas, and tests, and **explicitly marks these adapters as "Needs Keys" in both the UI and documentation**:
 
 | Adapter | Status | Required Credentials | Setup Documentation |
 | :--- | :--- | :--- | :--- |
-| **Google Calendar OAuth** | `NEEDS_KEYS` | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Configure OAuth 2.0 Client ID with `calendar.events.readonly` scope in Google Cloud Console. |
-| **HubSpot CRM Live Sync** | `NEEDS_KEYS` | `HUBSPOT_ACCESS_TOKEN` (Private App Token) | Create Private App in HubSpot portal with `crm.objects.deals.write` and `crm.objects.contacts.write` scopes. |
-| **Salesforce CRM Live Sync** | `NEEDS_KEYS` | `SALESFORCE_CLIENT_ID`, `SALESFORCE_INSTANCE_URL`, `SALESFORCE_SECRET` | Configure Connected App with OAuth 2.0 web-server flow in Salesforce Setup. |
-| **Microsoft Teams / Meet Bot** | `NEEDS_KEYS` | `TEAMS_APP_ID`, `TEAMS_BOT_PASSWORD`, `MEET_BOT_SERVICE_URL` | Deploy recall/bot service container and register Microsoft Graph bot credentials. |
+| **HubSpot CRM Live Sync** | `NEEDS_KEYS` | `HUBSPOT_ACCESS_TOKEN`, `HUBSPOT_PORTAL_ID` | Create Private App in HubSpot portal with `crm.objects.deals.write` and `crm.objects.contacts.write` scopes. |
+| **Salesforce CRM Live Sync** | `NEEDS_KEYS` | `SALESFORCE_CONSUMER_KEY`, `SALESFORCE_CONSUMER_SECRET` | Configure Connected App with OAuth 2.0 web-server flow in Salesforce Setup. |
+| **Microsoft Teams / Meet Bot** | `NEEDS_KEYS` | `AZURE_BOT_APP_ID`, `GOOGLE_WORKSPACE_SERVICE_ACCOUNT` | Deploy recall/bot service container and register Microsoft Graph / Google Workspace bot credentials. |
 
 > Tala AI does not emulate or fake successful third-party live authentication when credentials are not supplied.
+
+---
+
+## ☁️ Vercel Deployment
+
+Tala AI is pre-configured for deployment on Vercel (`vercel.json` included):
+1. Import `github.com/digitalmerch4862/tala` into Vercel.
+2. Framework Preset: **Vite** (`npm run build`, output directory `dist`).
+3. Serverless Function Route: `/api/calendar` (`api/calendar.ts`) is automatically deployed by Vercel.
+4. Configure the server-side environment variable in Vercel Project Settings:
+   - `COMPOSIO_API_KEY` — Composio API key for the account with active `googlecalendar` toolkit.
 
 ---
 
@@ -82,13 +107,13 @@ In accordance with enterprise security standards and zero-fake policy, live bidi
 # Install dependencies
 npm ci
 
-# Run unit tests (73 tests across 12 suites)
+# Run unit tests (80 tests across 13 suites)
 npm test
 
 # Build production bundle
 npm run build
 
-# Run Playwright E2E test suite (16 comprehensive feature specs)
+# Run Playwright E2E test suite (17 comprehensive feature specs)
 npm run test:e2e
 
 # Run security & secrets check

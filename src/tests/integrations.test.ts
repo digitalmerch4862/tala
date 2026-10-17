@@ -216,24 +216,20 @@ END:VCALENDAR`;
     });
   });
 
-  describe('Needs Keys Adapters Specification', () => {
-    it('should declare all live sync integrations clearly as needs_keys', () => {
-      expect(NEEDS_KEYS_ADAPTERS.length).toBe(4);
-      
-      const hubspot = NEEDS_KEYS_ADAPTERS.find(a => a.adapterId === 'hubspot-crm');
+  describe('Needs Keys & Composio Adapters Specification', () => {
+    it('should replace Google OAuth needs_keys with Composio spec and declare remaining 3 live sync integrations clearly as needs_keys', () => {
+      expect(NEEDS_KEYS_ADAPTERS.length).toBe(3);
+
+      const hubspot = NEEDS_KEYS_ADAPTERS.find((a) => a.adapterId === 'hubspot-crm');
       expect(hubspot).toBeDefined();
       expect(hubspot?.isConfigured).toBe(false);
       expect(hubspot?.missingCredentials).toContain('HUBSPOT_ACCESS_TOKEN');
 
-      const salesforce = NEEDS_KEYS_ADAPTERS.find(a => a.adapterId === 'salesforce-crm');
+      const salesforce = NEEDS_KEYS_ADAPTERS.find((a) => a.adapterId === 'salesforce-crm');
       expect(salesforce).toBeDefined();
       expect(salesforce?.isConfigured).toBe(false);
 
-      const googleOauth = NEEDS_KEYS_ADAPTERS.find(a => a.adapterId === 'google-calendar');
-      expect(googleOauth).toBeDefined();
-      expect(googleOauth?.isConfigured).toBe(false);
-
-      const meetingBot = NEEDS_KEYS_ADAPTERS.find(a => a.adapterId === 'meeting-bots');
+      const meetingBot = NEEDS_KEYS_ADAPTERS.find((a) => a.adapterId === 'meeting-bots');
       expect(meetingBot).toBeDefined();
       expect(meetingBot?.isConfigured).toBe(false);
     });

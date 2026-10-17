@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import { handleCalendarApiRequest } from '../api/calendar';
+import { FakeComposioCalendarAdapter } from '../src/services/composioCalendar';
 
 test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
   test('1. Library & Search: displays seeded real-estate meetings, metrics, and filters by channel', async ({
@@ -477,10 +479,11 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     await expect(page.locator('[data-testid="export-audit-json-btn"]')).toBeVisible();
     await expect(page.locator('[data-testid="audit-log-list"]')).toBeVisible();
 
-    // 3. Needs Keys Live Sync Adapters Tab
+    // 3. Composio Google Calendar & Needs Keys Live Sync Adapters Tab
     await page.locator('[data-testid="settings-tab-integrations"]').click();
     await expect(page.locator('[data-testid="settings-integrations-section"]')).toBeVisible();
-    await expect(page.locator('[data-testid="needs-keys-google-calendar"]')).toBeVisible();
+    await expect(page.locator('[data-testid="composio-google-calendar-card"]')).toBeVisible();
+    await expect(page.locator('[data-testid="settings-calendar-sync-badge"]')).toContainText('Calendar sync off');
     await expect(page.locator('[data-testid="needs-keys-hubspot-crm"]')).toBeVisible();
     await expect(page.locator('[data-testid="needs-keys-salesforce-crm"]')).toBeVisible();
     await expect(page.locator('[data-testid="needs-keys-meeting-bots"]')).toBeVisible();
@@ -516,5 +519,67 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     // Verify navigation into Meeting Detail View
     await expect(page.locator('[data-testid="meeting-detail-view"]')).toBeVisible({ timeout: 10000 });
     await expect(page.locator('[data-testid="detail-meeting-title"]')).toContainText('Harbor Park Residences');
+  });
+
+  test('17. Composio Google Calendar Serverless Route (/api/calendar): off fallback, list upcoming events, link event to meeting, and create follow-up event via fake adapter', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    // 1. Default local-first fallback when /api/calendar or COMPOSIO_API_KEY is absent
+    await page.locator('[data-testid="import-ics-btn"]').click();
+    await expect(page.locator('[data-testid="calendar-import-modal"]')).toBeVisible();
+    await expect(page.locator('[data-testid="calendar-sync-status-badge"]')).toContainText('Calendar sync off');
+
+    // 2. Mount /api/calendar serverless route backed by FakeComposioCalendarAdapter
+    const fakeAdapter = new FakeComposioCalendarAdapter(true);
+    await page.route('**/api/calendar*', async (route) => {
+      const request = route.request();
+      const url = new URL(request.url());
+      const query: Record<string, string> = {};
+      url.searchParams.forEach((v, k) => {
+        query[k] = v;
+      });
+      const postData = request.postData();
+      const result = await handleCalendarApiRequest(
+        {
+          method: request.method(),
+          query,
+          body: postData || undefined,
+        },
+        fakeAdapter
+      );
+      await route.fulfill({
+        status: result.statusCode,
+        contentType: 'application/json',
+        body: JSON.stringify(result.body),
+      });
+    });
+
+    // 3. Refresh Calendar Sync -> lists upcoming events from FakeComposioCalendarAdapter
+    await page.locator('[data-testid="refresh-composio-calendar-btn"]').click();
+    await expect(page.locator('[data-testid="calendar-sync-status-badge"]')).toContainText('Calendar sync active');
+    await expect(page.locator('[data-testid="composio-events-list"]')).toBeVisible();
+    await expect(page.locator('[data-testid="composio-event-0"]')).toContainText(
+      'Ayala Land Premier — BGC Penthouse Client Walkthrough'
+    );
+
+    // 4. Link event to a Tala meeting (title, attendees, time)
+    await page.locator('[data-testid="link-composio-event-0"]').click();
+    await expect(page.locator('[data-testid="calendar-import-modal"]')).not.toBeVisible();
+
+    // Verify linked meeting is in library and open it
+    const linkedCard = page.locator('text=Ayala Land Premier — BGC Penthouse Client Walkthrough').first();
+    await expect(linkedCard).toBeVisible();
+    await linkedCard.click();
+    await expect(page.locator('[data-testid="meeting-detail-view"]')).toBeVisible();
+
+    // 5. Create follow-up event on Google Calendar via Agenda Carry-Over
+    await page.locator('[data-testid="tab-agenda-btn"]').click();
+    await expect(page.locator('[data-testid="agenda-editor-view"]')).toBeVisible();
+    await page.locator('[data-testid="carry-over-agenda-btn"]').click();
+    await expect(page.locator('[data-testid="carry-over-notice-banner"]')).toContainText(
+      'synced to Google Calendar (gcal-followup-3)'
+    );
   });
 });

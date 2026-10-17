@@ -33,6 +33,7 @@ import {
 } from '../prep';
 import { generatePreMeetingBrief } from '../services/aiIntelligence';
 import { saveMeeting } from '../services/storage';
+import { pushFollowUpCalendarEvent } from '../services/composioCalendar';
 
 interface AgendaEditorViewProps {
   meeting: Meeting;
@@ -181,9 +182,28 @@ export const AgendaEditorView: React.FC<AgendaEditorViewProps> = ({
       tags: [...meeting.tags, 'Follow-up'],
     };
 
+    const calRes = await pushFollowUpCalendarEvent({
+      title: followUpTitle,
+      description: `Follow-up meeting carried over from ${meeting.title}. Topics: ${nextAgenda.items
+        .map((i: AgendaItem) => i.title)
+        .join(', ')}`,
+      startTime: new Date(Date.now() + 7 * 86400000).toISOString(),
+      durationMinutes: manager.getTimeboxSummary().totalAllocatedMinutes || 45,
+      attendees: meeting.participants,
+      location: meeting.summary.realEstateMetrics?.location,
+    });
+
+    if (calRes.enabled && calRes.event) {
+      followUpMeeting.calendarEventId = calRes.event.id;
+      followUpMeeting.calendarEventLink = calRes.event.htmlLink;
+      followUpMeeting.tags.push('Google Calendar', 'Composio Sync');
+    }
+
     await saveMeeting(followUpMeeting);
     setCarryOverNotice(
-      `Follow-up meeting "${followUpTitle}" created with ${nextAgenda.items.length} carried-over topics.`
+      calRes.enabled && calRes.event
+        ? `Follow-up meeting "${followUpTitle}" created with ${nextAgenda.items.length} carried-over topics and synced to Google Calendar (${calRes.event.id}).`
+        : `Follow-up meeting "${followUpTitle}" created with ${nextAgenda.items.length} carried-over topics.`
     );
 
     if (onOpenFollowUpMeeting) {

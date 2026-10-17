@@ -23,7 +23,8 @@ import {
 import { TalaSettings, AuditLogEntry } from '../types';
 import { SUPPORTED_LANGUAGES } from '../languages/languages';
 import { purgeExpiredMeetings, getAllAuditLogs, saveAuditLog } from '../services/storage';
-import { NEEDS_KEYS_ADAPTERS } from '../services/integrations';
+import { NEEDS_KEYS_ADAPTERS, COMPOSIO_CALENDAR_ADAPTER_SPEC } from '../services/integrations';
+import { fetchCalendarSyncStatus } from '../services/composioCalendar';
 import { AuditLog } from '../privacy/audit';
 
 interface SettingsModalProps {
@@ -67,10 +68,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   // Audit Logs
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [auditFilter, setAuditFilter] = useState('');
+  const [calendarSyncEnabled, setCalendarSyncEnabled] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       loadAudit();
+      fetchCalendarSyncStatus().then((res) => setCalendarSyncEnabled(res.enabled));
     }
   }, [isOpen]);
 
@@ -563,6 +566,40 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       />
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Composio Google Calendar Server-Side Sync Card */}
+              <div
+                className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5"
+                data-testid="composio-google-calendar-card"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Globe className="w-4 h-4 text-blue-400" />
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                      {COMPOSIO_CALENDAR_ADAPTER_SPEC.name}
+                    </h3>
+                  </div>
+                  <span
+                    data-testid="settings-calendar-sync-badge"
+                    className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border uppercase tracking-wider ${
+                      calendarSyncEnabled
+                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                        : 'bg-slate-800 text-slate-300 border-slate-700'
+                    }`}
+                  >
+                    {calendarSyncEnabled ? 'Calendar sync active' : 'Calendar sync off'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-normal">
+                  {COMPOSIO_CALENDAR_ADAPTER_SPEC.description}
+                </p>
+                <div className="text-[10px] text-slate-500">
+                  <span className="font-semibold text-slate-400">Serverless route: </span>
+                  <code>{COMPOSIO_CALENDAR_ADAPTER_SPEC.route}</code> •{' '}
+                  <span className="font-semibold text-slate-400">Server Env Variable: </span>
+                  <code>{COMPOSIO_CALENDAR_ADAPTER_SPEC.envVarName}</code>
                 </div>
               </div>
 

@@ -276,22 +276,24 @@ export function exportToNotionMarkdown(meeting: Meeting): string {
  * Required by brief: Declare clean interface, config, test with fake; say so in UI and README.
  */
 export interface NeedsKeysAdapterStatus {
-  adapterId: 'google-calendar' | 'hubspot-crm' | 'salesforce-crm' | 'meeting-bots';
+  adapterId: 'hubspot-crm' | 'salesforce-crm' | 'meeting-bots';
   name: string;
   isConfigured: boolean;
   missingCredentials: string[];
   setupInstructions: string;
 }
 
+export const COMPOSIO_CALENDAR_ADAPTER_SPEC = {
+  adapterId: 'composio-google-calendar',
+  name: 'Google Calendar Two-Way Sync (Composio)',
+  route: '/api/calendar',
+  toolkit: 'googlecalendar',
+  envVarName: 'COMPOSIO_API_KEY',
+  description:
+    'Server-side Google Calendar sync powered by Composio (`googlecalendar` toolkit) via `/api/calendar`. When `COMPOSIO_API_KEY` is absent, UI shows "Calendar sync off" and local-first `.ics` import remains active.',
+};
+
 export const NEEDS_KEYS_ADAPTERS: NeedsKeysAdapterStatus[] = [
-  {
-    adapterId: 'google-calendar',
-    name: 'Google Calendar Two-Way Sync',
-    isConfigured: false,
-    missingCredentials: ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'],
-    setupInstructions:
-      'Requires a registered Google Cloud Console OAuth 2.0 Web Application with Calendar API scope (https://www.googleapis.com/auth/calendar.events).',
-  },
   {
     adapterId: 'hubspot-crm',
     name: 'HubSpot Live Bi-Directional CRM Sync',

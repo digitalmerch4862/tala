@@ -123,6 +123,8 @@ export interface Meeting {
   preMeetingBrief?: PreMeetingBrief;
   versions?: NoteVersion[];
   redactedPhrases?: string[];
+  calendarEventId?: string;
+  calendarEventLink?: string;
 }
 
 export interface Channel {
