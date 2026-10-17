@@ -1,0 +1,35 @@
+{
+  "name": "tala",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Tala AI: Intelligent Meeting Notetaker & Action Hub for Real Estate & Enterprise",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check:secrets": "! grep -rniE \"ghp_[A-Za-z0-9_]{30,}|github_pat_[A-Za-z0-9_]{30,}|sk-ant-[A-Za-z0-9_-]{30,}|AIzaSy[A-Za-z0-9_-]{33}\" --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.git . || (echo 'Secrets found!' && exit 1)"
+  },
+  "dependencies": {
+    "idb": "^8.0.2",
+    "lucide-react": "^0.475.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.50.1",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "fake-indexeddb": "^6.2.6",
+    "happy-dom": "^21.0.1",
+    "postcss": "^8.5.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "vitest": "^3.0.5"
+  }
+}
