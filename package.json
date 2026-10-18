@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Tala AI: Intelligent Meeting Notetaker & Action Hub for Real Estate & Enterprise",
+  "description": "Tala AI: Intelligent Meeting Notetaker & Action Hub for Teams",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
