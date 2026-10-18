@@ -43,7 +43,7 @@ export const AudioUploadModal: React.FC<AudioUploadModalProps> = ({
   );
   const [templateId, setTemplateId] = useState(initialTemplateId || MEETING_TEMPLATES[0].id);
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE_CODE);
-  const [participantsText, setParticipantsText] = useState('Rad (BDM), Client');
+  const [participantsText, setParticipantsText] = useState('Host, Guest');
 
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
@@ -100,7 +100,7 @@ export const AudioUploadModal: React.FC<AudioUploadModalProps> = ({
         participants,
       });
 
-      setUploadStatus('Synthesizing executive summary & real estate metrics...');
+      setUploadStatus('Synthesizing executive summary & meeting intelligence...');
       const aiEngine = getAIIntelligenceEngine(llmProvider);
       const summary = await aiEngine.generateSummary(transcript, templateId, title || selectedFile.name);
 
@@ -116,10 +116,10 @@ export const AudioUploadModal: React.FC<AudioUploadModalProps> = ({
         title: title.trim() || selectedFile.name,
         createdAt: new Date().toISOString(),
         durationSeconds: 1200, // standard duration representation
-        channelId: channelId || 'residential-preselling',
-        channelName: selectedChannel?.name || 'Residential Pre-selling',
+        channelId: channelId || 'general',
+        channelName: selectedChannel?.name || 'General',
         templateId: templateId || MEETING_TEMPLATES[0].id,
-        templateName: selectedTemplate?.name || 'Client Property Discovery',
+        templateName: selectedTemplate?.name || 'Team Standup',
         language,
         participants,
         status: 'completed',
@@ -128,7 +128,7 @@ export const AudioUploadModal: React.FC<AudioUploadModalProps> = ({
         transcript,
         summary,
         actionItems,
-        tags: [selectedTemplate?.category || 'real_estate', selectedChannel?.name || 'Uploaded'],
+        tags: [selectedTemplate?.category || 'general', selectedChannel?.name || 'Uploaded'],
       };
 
       onMeetingCreated(newMeeting);
@@ -247,7 +247,7 @@ export const AudioUploadModal: React.FC<AudioUploadModalProps> = ({
 
             <div>
               <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
-                Real Estate Template
+                Meeting Template
               </label>
               <select
                 value={templateId}
@@ -291,7 +291,7 @@ export const AudioUploadModal: React.FC<AudioUploadModalProps> = ({
                 type="text"
                 value={participantsText}
                 onChange={(e) => setParticipantsText(e.target.value)}
-                placeholder="Rad (BDM), Client Name"
+                placeholder="Host, Guest 1, Guest 2"
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/60 transition"
               />
             </div>

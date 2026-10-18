@@ -241,14 +241,7 @@ export const AgendaEditorView: React.FC<AgendaEditorViewProps> = ({
               data-testid="agenda-template-picker"
               className="bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-brand-500"
             >
-              <optgroup label="Real Estate Templates">
-                {realEstateTemplates.map((t: PrepTemplate) => (
-                  <option key={t.id} value={t.id}>
-                    {t.title}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label="General Business">
+              <optgroup label="General & Team">
                 {templates
                   .filter((t: PrepTemplate) => t.category !== 'real-estate')
                   .map((t: PrepTemplate) => (
@@ -256,6 +249,13 @@ export const AgendaEditorView: React.FC<AgendaEditorViewProps> = ({
                       {t.title}
                     </option>
                   ))}
+              </optgroup>
+              <optgroup label="Real Estate">
+                {realEstateTemplates.map((t: PrepTemplate) => (
+                  <option key={t.id} value={t.id}>
+                    {t.title}
+                  </option>
+                ))}
               </optgroup>
             </select>
           </div>

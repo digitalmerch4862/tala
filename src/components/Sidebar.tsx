@@ -54,10 +54,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center space-x-1.5">
               <span className="font-bold text-base tracking-tight text-white">Tala AI</span>
               <span className="text-[10px] font-semibold uppercase tracking-wider bg-brand-500/20 text-brand-400 px-1.5 py-0.5 rounded">
-                BDM
+                PRO
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 leading-none mt-0.5">Real Estate Meeting Hub</p>
+            <p className="text-[11px] text-slate-400 leading-none mt-0.5">Team Meeting Hub</p>
           </div>
         </div>
       </div>
@@ -158,7 +158,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }`}
         >
           <LayoutTemplate className="w-4 h-4 text-emerald-400" />
-          <span>Real Estate Templates</span>
+          <span>Meeting Templates</span>
         </button>
 
         {/* Channels Section */}

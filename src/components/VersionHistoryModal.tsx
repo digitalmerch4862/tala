@@ -60,7 +60,7 @@ export const VersionHistoryModal: React.FC<VersionHistoryModalProps> = ({
       meetingId: meeting.id,
       versionNumber: nextVerNumber,
       timestamp: new Date().toISOString(),
-      author: 'Rad (BDM)',
+      author: meeting.participants[0] || 'Host',
       changeDescription: `Manual snapshot (Version ${nextVerNumber})`,
       title: meeting.title,
       summary: meeting.summary,

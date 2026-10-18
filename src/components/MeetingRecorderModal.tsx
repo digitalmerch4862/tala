@@ -46,7 +46,7 @@ export const MeetingRecorderModal: React.FC<MeetingRecorderModalProps> = ({
   const [channelId, setChannelId] = useState(selectedChannelId === 'all' ? channels[0]?.id || '' : selectedChannelId);
   const [templateId, setTemplateId] = useState(initialTemplateId || MEETING_TEMPLATES[0].id);
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE_CODE);
-  const [participantsText, setParticipantsText] = useState('Rad (BDM), Client');
+  const [participantsText, setParticipantsText] = useState('Host, Guest');
 
   const [recorderState, setRecorderState] = useState<'inactive' | 'recording' | 'paused'>('inactive');
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -67,7 +67,7 @@ export const MeetingRecorderModal: React.FC<MeetingRecorderModalProps> = ({
         setTemplateId(initialTemplateId);
       }
       const now = new Date();
-      setTitle(`Client Meeting — ${now.toLocaleDateString()}`);
+      setTitle(`Team Meeting — ${now.toLocaleDateString()}`);
       setRecorderState('inactive');
       setElapsedSeconds(0);
       setAudioVolume(0);
@@ -250,7 +250,7 @@ export const MeetingRecorderModal: React.FC<MeetingRecorderModalProps> = ({
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Shang Residences BGC — Client Discovery"
+              placeholder="e.g. Team Standup / Client Review"
               data-testid="record-modal-title-input"
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/60 transition"
             />
@@ -278,7 +278,7 @@ export const MeetingRecorderModal: React.FC<MeetingRecorderModalProps> = ({
 
             <div>
               <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
-                Real Estate Template
+                Meeting Template
               </label>
               <select
                 value={templateId}
@@ -323,7 +323,7 @@ export const MeetingRecorderModal: React.FC<MeetingRecorderModalProps> = ({
                 type="text"
                 value={participantsText}
                 onChange={(e) => setParticipantsText(e.target.value)}
-                placeholder="Rad (BDM), Buyer Name"
+                placeholder="Host, Guest 1, Guest 2"
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/60 transition"
               />
             </div>

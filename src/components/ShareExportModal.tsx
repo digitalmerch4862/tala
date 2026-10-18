@@ -136,7 +136,7 @@ export const ShareExportModal: React.FC<ShareExportModalProps> = ({
     </div>
 
     <footer>
-      Exported via Tala AI Real Estate Meeting Hub • Local-First Zero Training Architecture
+      Exported via Tala AI Meeting Hub • Local-First Zero Training Architecture
     </footer>
   </div>
 </body>

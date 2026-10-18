@@ -99,9 +99,9 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
       durationSeconds: ev.durationMinutes * 60,
       channelId,
       channelName,
-      templateId: 'tpl-property-discovery',
-      templateName: 'Client Property Discovery & Brief',
-      participants: ev.attendees.length > 0 ? ev.attendees : ['Rad (BDM)', 'Prospective Buyer'],
+      templateId: 'team-standup',
+      templateName: 'Team Standup',
+      participants: ev.attendees.length > 0 ? ev.attendees : ['Host', 'Guest'],
       language: 'fil-PH (Tagalog / English)',
       summary: {
         overview:
@@ -114,15 +114,18 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
         ],
         decisionsMade: ['Meeting agenda established from imported calendar booking.'],
         nextSteps: [
-          'Conduct face-to-face discovery meeting.',
+          'Conduct team alignment meeting.',
           'Record and summarize key discussion points.',
         ],
-        realEstateMetrics: {
-          location: ev.location || 'Metro Manila',
-          propertyType: 'Residential Condominium',
-          budgetRange: 'PHP 10M - 25M',
-          financingType: 'Bank',
-        },
+        realEstateMetrics:
+          ev.title.toLowerCase().includes('condo') || ev.title.toLowerCase().includes('property')
+            ? {
+                location: ev.location || 'Metro Manila',
+                propertyType: 'Residential Condominium',
+                budgetRange: 'PHP 10M - 25M',
+                financingType: 'Bank',
+              }
+            : undefined,
       },
       actionItems: [
         {
@@ -130,7 +133,7 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
           meetingId: `mtg-${Date.now()}`,
           meetingTitle: ev.title,
           title: `Prepare presentation materials for ${ev.title}`,
-          assignee: 'Rad (BDM)',
+          assignee: ev.attendees[0] || 'Host',
           dueDate: ev.startDate.split('T')[0] || new Date().toISOString().split('T')[0],
           status: 'todo',
           priority: 'high',
@@ -140,7 +143,7 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
       transcript: [
         {
           id: `utt-${Date.now()}-1`,
-          speaker: 'Rad (BDM)',
+          speaker: ev.attendees[0] || 'Host',
           text: `Welcome! This session was scheduled for ${ev.title}.`,
           startSec: 5,
           endSec: 10,

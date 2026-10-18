@@ -40,8 +40,19 @@ export class MockAIProvider implements AIIntelligenceEngine {
     meetingTitle: string
   ): Promise<MeetingSummary> {
     const fullText = transcript.map((u) => `${u.speaker}: ${u.text}`).join('\n');
+    const isRealEstate =
+      templateId === 'client-discovery' ||
+      templateId === 'site-viewing' ||
+      templateId === 'developer-broker-alignment' ||
+      templateId === 'financing-mortgage' ||
+      templateId === 'closing-reservation' ||
+      templateId.startsWith('re-') ||
+      meetingTitle.toLowerCase().includes('property') ||
+      meetingTitle.toLowerCase().includes('condo') ||
+      meetingTitle.toLowerCase().includes('shang residences') ||
+      meetingTitle.toLowerCase().includes('bgc discovery');
 
-    if (templateId === 'client-discovery' || fullText.includes('budget') || fullText.includes('condominium') || fullText.includes('BGC')) {
+    if (isRealEstate && (templateId === 'client-discovery' || templateId === 're-client-discovery' || fullText.includes('condominium') || fullText.includes('BGC'))) {
       return {
         overview: `Executive property discovery session conducted for "${meetingTitle}". Analyzed buyer criteria, desired development specifications, and equity repayment schedules.`,
         keyDiscussionPoints: [
@@ -68,7 +79,7 @@ export class MockAIProvider implements AIIntelligenceEngine {
       };
     }
 
-    if (templateId === 'site-viewing') {
+    if (isRealEstate && (templateId === 'site-viewing' || templateId === 're-site-viewing')) {
       return {
         overview: `On-site property inspection and model showroom walkthrough for "${meetingTitle}". Captured prospective buyer feedback, layout impressions, and turnover finishings.`,
         keyDiscussionPoints: [
@@ -93,7 +104,7 @@ export class MockAIProvider implements AIIntelligenceEngine {
       };
     }
 
-    if (templateId === 'developer-broker-alignment') {
+    if (isRealEstate && (templateId === 'developer-broker-alignment' || templateId === 're-developer-broker-call')) {
       return {
         overview: `Broker and business development partner alignment session for "${meetingTitle}". Finalized Q4 sales incentives, commission structures, and priority inventory holding blocks.`,
         keyDiscussionPoints: [
@@ -118,9 +129,9 @@ export class MockAIProvider implements AIIntelligenceEngine {
       };
     }
 
-    // Default executive summary
+    // Default executive summary for general team meetings
     return {
-      overview: `Strategic meeting review for "${meetingTitle}". Key discussion topics, collaborative insights, and actionable next steps were documented.`,
+      overview: `Meeting review and discussion summary for "${meetingTitle}". Key discussion topics, collaborative insights, and actionable next steps were documented.`,
       keyDiscussionPoints: [
         'Reviewed current milestone progress and operational metrics against target schedule.',
         'Addressed prospective blockers and identified cross-team dependencies.',
@@ -147,6 +158,7 @@ export class MockAIProvider implements AIIntelligenceEngine {
 
     const tomorrow = new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString().split('T')[0];
     const threeDays = new Date(Date.now() + 1000 * 60 * 60 * 72).toISOString().split('T')[0];
+    const defaultAssignee = transcript[0]?.speaker || 'Host';
 
     if (fullText.toLowerCase().includes('computation') || fullText.toLowerCase().includes('sheet')) {
       items.push({
@@ -154,7 +166,7 @@ export class MockAIProvider implements AIIntelligenceEngine {
         meetingId,
         meetingTitle,
         title: 'Prepare and send sample computation sheet with 30/70 bank equity schedule',
-        assignee: 'Rad (BDM)',
+        assignee: defaultAssignee,
         dueDate: tomorrow,
         priority: 'high',
         status: 'todo',
@@ -168,7 +180,7 @@ export class MockAIProvider implements AIIntelligenceEngine {
         meetingId,
         meetingTitle,
         title: 'Schedule private showroom walkthrough and arrange guest parking pass',
-        assignee: 'Rad (BDM)',
+        assignee: defaultAssignee,
         dueDate: threeDays,
         priority: 'high',
         status: 'todo',
@@ -182,7 +194,7 @@ export class MockAIProvider implements AIIntelligenceEngine {
         meetingId,
         meetingTitle,
         title: 'Submit unit hold request form and send Buyer Information Sheet (BIS)',
-        assignee: 'Rad (BDM)',
+        assignee: defaultAssignee,
         dueDate: tomorrow,
         priority: 'medium',
         status: 'todo',
@@ -196,7 +208,7 @@ export class MockAIProvider implements AIIntelligenceEngine {
         meetingId,
         meetingTitle,
         title: 'Circulate meeting notes and follow up on agreed action points',
-        assignee: 'Rad (BDM)',
+        assignee: defaultAssignee,
         dueDate: tomorrow,
         priority: 'medium',
         status: 'todo',
@@ -245,7 +257,7 @@ export class MockAIProvider implements AIIntelligenceEngine {
     agendaItems?: string[],
     carryOverNotes?: string[]
   ): Promise<PreMeetingBrief> {
-    const participantList = participants.length > 0 ? participants.join(', ') : 'Rad (BDM) & Counterparts';
+    const participantList = participants.length > 0 ? participants.join(', ') : 'Host & Participants';
 
     if (templateId === 'client-discovery' || templateId === 're-client-discovery') {
       return {
@@ -386,10 +398,9 @@ export class MockAIProvider implements AIIntelligenceEngine {
           .join('\n');
     }
 
-    if (q.includes('summary') || q.includes('overview') || q.includes('deal') || q.includes('pipeline')) {
-      return `**Tala Real Estate Executive Summary Across ${allMeetings.length} Meeting(s)**:\n` +
-        `• Total pipeline volume: BGC Luxury Residences (Shang, Aurelia) & Southern Luzon Commercial Lots (Nuvali/Vermosa).\n` +
-        `• Active deals: 2 pre-selling consultations, 1 commercial broker agreement.\n` +
+    if (q.includes('summary') || q.includes('overview') || q.includes('deal') || q.includes('pipeline') || q.includes('status')) {
+      return `**Tala Executive Summary Across ${allMeetings.length} Meeting(s)**:\n` +
+        `• Active projects & meetings: Team standups, client engagements, and strategic reviews.\n` +
         `• Open action items: ${allMeetings.flatMap((m) => m.actionItems).filter((a) => a.status !== 'completed').length} pending deliverables.`;
     }
 
@@ -413,7 +424,7 @@ export class FleetAIProvider implements AIIntelligenceEngine {
     meetingTitle: string
   ): Promise<MeetingSummary> {
     try {
-      const prompt = `You are Tala AI, an executive meeting notetaker for business development in real estate.
+      const prompt = `You are Tala AI, an executive meeting notetaker for high-performance team meetings.
 Summarize the following transcript for meeting "${meetingTitle}" (Template: ${templateId}).
 Return JSON with:
 {

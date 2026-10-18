@@ -19,7 +19,7 @@ interface TemplatesViewProps {
 }
 
 export const TemplatesView: React.FC<TemplatesViewProps> = ({ onStartWithTemplate }) => {
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'real_estate' | 'executive' | 'general'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'general' | 'real_estate' | 'executive'>('all');
 
   const filteredTemplates = MEETING_TEMPLATES.filter((tmpl) => {
     if (categoryFilter !== 'all' && tmpl.category !== categoryFilter) return false;
@@ -50,7 +50,7 @@ export const TemplatesView: React.FC<TemplatesViewProps> = ({ onStartWithTemplat
       {/* Header */}
       <header className="p-6 border-b border-slate-800 bg-slate-900/60 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white tracking-tight">Real Estate & Executive Templates</h1>
+          <h1 className="text-xl font-bold text-white tracking-tight">Meeting Templates</h1>
           <p className="text-xs text-slate-400 mt-0.5">
             Turnkey agenda structures and domain-specific extraction prompts for meetings.
           </p>
@@ -69,14 +69,24 @@ export const TemplatesView: React.FC<TemplatesViewProps> = ({ onStartWithTemplat
             All Templates
           </button>
           <button
-            onClick={() => setCategoryFilter('real_estate')}
+            onClick={() => setCategoryFilter('general')}
             className={`px-3 py-1.5 rounded-lg font-medium transition ${
-              categoryFilter === 'real_estate'
+              categoryFilter === 'general'
                 ? 'bg-brand-500/20 text-brand-400 font-semibold border border-brand-500/30'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            Real Estate (PH)
+            General & Team
+          </button>
+          <button
+            onClick={() => setCategoryFilter('real_estate')}
+            className={`px-3 py-1.5 rounded-lg font-medium transition ${
+              categoryFilter === 'real_estate'
+                ? 'bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Real Estate
           </button>
           <button
             onClick={() => setCategoryFilter('executive')}
@@ -108,7 +118,7 @@ export const TemplatesView: React.FC<TemplatesViewProps> = ({ onStartWithTemplat
                   <div>
                     <h3 className="text-sm font-bold text-white">{tmpl.name}</h3>
                     <span className="text-[10px] uppercase font-semibold text-slate-500 tracking-wider">
-                      {tmpl.category === 'real_estate' ? 'Real Estate' : tmpl.category}
+                      {tmpl.category === 'real_estate' ? 'Real Estate' : tmpl.category === 'general' ? 'General' : tmpl.category === 'executive' ? 'Executive' : tmpl.category}
                     </span>
                   </div>
                 </div>

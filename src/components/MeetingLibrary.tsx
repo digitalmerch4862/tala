@@ -170,7 +170,7 @@ export const MeetingLibrary: React.FC<MeetingLibraryProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search transcripts, decisions, properties, or participants..."
+            placeholder="Search transcripts, decisions, topics, or participants..."
             data-testid="meeting-search-input"
             className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/60 transition"
           />

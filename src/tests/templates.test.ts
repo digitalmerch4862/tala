@@ -2,9 +2,14 @@ import { describe, it, expect } from 'vitest';
 import { MEETING_TEMPLATES } from '../templates/meetingTemplates';
 
 describe('Tala Meeting Templates Catalog', () => {
-  it('includes all required real estate and executive templates', () => {
+  it('includes all required general, real estate, and executive templates', () => {
     const ids = MEETING_TEMPLATES.map((t) => t.id);
 
+    expect(ids).toContain('team-standup');
+    expect(ids).toContain('client-call');
+    expect(ids).toContain('one-on-one');
+    expect(ids).toContain('sales-call');
+    expect(ids).toContain('project-planning');
     expect(ids).toContain('client-discovery');
     expect(ids).toContain('site-viewing');
     expect(ids).toContain('developer-broker-alignment');

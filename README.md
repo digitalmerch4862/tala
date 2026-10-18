@@ -1,38 +1,38 @@
 # Tala AI — Intelligent Meeting Notetaker & Action Hub
 
-> **Executive AI Meeting Notetaker, Prep & Privacy Hub for Real Estate & Enterprise**  
-> Custom-built for **Boss Rad**, Business Development Manager in Real Estate (PH).  
+> **Executive AI Meeting Notetaker, Prep & Privacy Hub for Teams & Organizations**  
+> Private team meeting intelligence for all face-to-face and online sessions.  
 > Original IP-safe work-alike engineered under D-org (`digitalmerch4862`).
 
 ---
 
 ## 🌟 Overview
 
-**Tala AI** ("Tala" is Tagalog for *record, note, or star*) is an executive-grade, privacy-first meeting notetaker designed for high-stakes face-to-face and virtual business negotiations.
+**Tala AI** ("Tala" is Tagalog for *record, note, or star*) is an executive-grade, privacy-first general meeting notetaker designed for all team sessions — both face-to-face and virtual. Built for private team use, Tala AI provides live audio recording, audio file ingestion, multi-speaker diarization across 92 languages, collaborative meeting agendas with timeboxes, pre-meeting briefs, notes version history, cryptographic privacy auditing, cross-meeting action item tracking, and interactive global Q&A.
 
-Engineered specifically around Philippine real estate workflows (pre-selling developments, BGC/Makati luxury condos, CALAX commercial lots, broker commissions, bank vs Pag-IBIG financing, and reservation agreements), Tala AI provides live audio recording, audio file ingestion, multi-speaker diarization across 92 languages, collaborative meeting agendas with timeboxes, pre-meeting briefs, notes version history, cryptographic privacy auditing, cross-meeting action item tracking, and interactive global Q&A.
+A rich suite of meeting templates (including Team Standup, Client Call, 1-on-1, Sales Call, Project Planning, and specialized Real Estate workflows) provides tailored structure and extraction while keeping the core experience fast, versatile, and general-purpose.
 
 ---
 
 ## 🚀 Complete Feature Architecture
 
 ### 1. Collaborative Prep & Agenda Management (`src/prep`)
-- **Turnkey Real Estate & Business Templates**: Pre-configured templates for Client Property Discovery, Site Viewing / Tripping, Developer Alignment, Financing & Mortgage, and Closing Follow-Up.
+- **Turnkey General & Industry Templates**: Pre-configured templates for Team Standup, Client Call, 1-on-1, Sales/Prospect Call, Project Planning, plus a dedicated category for Real Estate (Discovery, Site Viewing, Financing, Closing).
 - **Timebox Management**: Calculate total planned duration, track allocated minutes per topic, and visualize pacing.
 - **Topic Reordering & Talking Points**: Reorder agenda topics with live up/down actions, add interactive talking points, and monitor coverage.
-- **Pre-Meeting AI Brief**: One-click synthesis of past deal history, participant context, strategic talking points, and objection risk factors.
+- **Pre-Meeting AI Brief**: One-click synthesis of past meeting history, participant context, strategic talking points, and risk factors.
 - **Carry-Over Engine**: Automatically transfer unfinished agenda topics, pending commitments, and open questions into structured follow-up meetings.
 
 ### 2. In-Browser Recording & Media Ingestion
 - **Face-to-Face Meeting Capture**: In-browser audio recording via Web Audio and `MediaRecorder` API with live waveform meter.
 - **Pause & Resume Controls**: Full pause and resume support during live discussions.
-- **Off-The-Record Privacy Mode**: One-click toggle that halts transcription and summarization during confidential pricing, commission splits, or sensitive disclosures.
+- **Off-The-Record Privacy Mode**: One-click toggle that halts transcription and summarization during confidential discussions, sensitive disclosures, or private sidebars.
 - **Audio/Video Upload**: Ingest pre-recorded sessions (`.mp3`, `.wav`, `.m4a`, `.webm`, `.mp4`) with automatic speaker diarization.
 
-### 3. Real Estate Intelligence & Executive Summaries
-- **Executive Recaps**: High-level overview, key discussion points, decisions made, and next steps.
-- **Real Estate Deal Brief**: Automatically extracts property type, location, budget envelope (TCP), and financing scheme.
-- **Multi-Speaker Diarization**: Separates speakers (`Rad (BDM)`, `Buyer / Client`, `Broker Partner`) with interactive timestamp scrubber.
+### 3. Meeting Intelligence & Executive Summaries
+- **Executive Recaps**: High-level overview, key discussion points, decisions made, and next steps for any team meeting.
+- **Contextual Deal & Project Briefs**: Automatically extracts deal parameters and property metrics when real-estate or transaction templates are used.
+- **Multi-Speaker Diarization**: Separates speakers (`Host`, `Guest`, `Speaker 1`, etc.) with interactive timestamp scrubber.
 - **92 Multilingual Support**: Registry supporting Filipino / Tagalog (`fil-PH`), Cebuano (`ceb-PH`), Ilocano (`ilo-PH`), English, and 88 additional languages.
 
 ### 4. Notes Version History & Rollback

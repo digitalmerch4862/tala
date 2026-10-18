@@ -82,7 +82,7 @@ export const MeetingDetailView: React.FC<MeetingDetailViewProps> = ({
   // New action item form
   const [showAddAction, setShowAddAction] = useState(false);
   const [newActionTitle, setNewActionTitle] = useState('');
-  const [newActionAssignee, setNewActionAssignee] = useState(meeting.participants[0] || 'Rad (BDM)');
+  const [newActionAssignee, setNewActionAssignee] = useState(meeting.participants[0] || 'Host');
   const [newActionDueDate, setNewActionDueDate] = useState(
     new Date(Date.now() + 1000 * 60 * 60 * 48).toISOString().split('T')[0]
   );
@@ -149,7 +149,7 @@ export const MeetingDetailView: React.FC<MeetingDetailViewProps> = ({
       meetingId: meeting.id,
       meetingTitle: meeting.title,
       title: newActionTitle.trim(),
-      assignee: newActionAssignee.trim() || 'Rad (BDM)',
+      assignee: newActionAssignee.trim() || 'Host',
       dueDate: newActionDueDate,
       priority: newActionPriority,
       status: 'todo',
@@ -182,7 +182,8 @@ export const MeetingDetailView: React.FC<MeetingDetailViewProps> = ({
 
     if (meeting.summary.realEstateMetrics) {
       const rem = meeting.summary.realEstateMetrics;
-      md += `### Real Estate Deal Parameters\n`;
+      const isRe = meeting.tags?.includes('real_estate') || meeting.templateId?.startsWith('re-') || meeting.templateId === 'client-discovery';
+      md += isRe ? `### Deal Parameters & Brief\n` : `### Meeting Intelligence & Parameters\n`;
       if (rem.propertyType) md += `- **Property Type**: ${rem.propertyType}\n`;
       if (rem.location) md += `- **Location**: ${rem.location}\n`;
       if (rem.budgetRange) md += `- **Budget / TCP**: ${rem.budgetRange}\n`;
@@ -506,9 +507,13 @@ export const MeetingDetailView: React.FC<MeetingDetailViewProps> = ({
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center space-x-2 text-brand-400 text-xs font-bold uppercase tracking-wider">
                     <Building className="w-4 h-4" />
-                    <span>Real Estate Deal Parameters & Brief</span>
+                    <span>
+                      {meeting.tags?.includes('real_estate') || meeting.templateId?.startsWith('re-') || meeting.templateId === 'client-discovery'
+                        ? 'Deal Brief & Parameters'
+                        : 'Meeting Intelligence & Parameters'}
+                    </span>
                   </div>
-                  <span className="text-[11px] text-slate-400">Tuned for Boss Rad</span>
+                  <span className="text-[11px] text-slate-400">Tala AI Intelligence</span>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">

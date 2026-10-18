@@ -80,4 +80,35 @@ describe('Tala AI Intelligence Engine', () => {
     const actionAnswer = await provider.askAssistant('What are the next steps?', mockClientDiscoveryTranscript, summary);
     expect(actionAnswer).toContain('Agreed next steps');
   });
+
+  it('defaults to general summary without real estate deal metrics for non-real-estate meetings', async () => {
+    const generalTranscript: TranscriptUtterance[] = [
+      {
+        id: 'utt-gen-1',
+        speaker: 'Host',
+        text: 'Let us review sprint progress, today commitments, and team blockers.',
+        startSec: 0,
+        endSec: 15,
+      },
+      {
+        id: 'utt-gen-2',
+        speaker: 'Speaker 1',
+        text: 'All API contracts are merged and unit tests are passing.',
+        startSec: 16,
+        endSec: 30,
+      },
+    ];
+
+    const summary = await provider.generateSummary(
+      generalTranscript,
+      'team-standup',
+      'Engineering Daily Standup'
+    );
+
+    expect(summary.overview).toContain('Meeting review and discussion summary');
+    expect(summary.keyDiscussionPoints.length).toBeGreaterThan(0);
+    expect(summary.decisionsMade.length).toBeGreaterThan(0);
+    expect(summary.nextSteps.length).toBeGreaterThan(0);
+    expect(summary.realEstateMetrics).toBeUndefined();
+  });
 });

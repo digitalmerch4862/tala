@@ -4,13 +4,13 @@ import { getAllTemplates, getTemplateById, getTemplatesByCategory, searchTemplat
 import type { MeetingTemplate } from '../../prep/templates/index.js';
 
 describe('Meeting Template Library & Registry', () => {
-  it('should register exactly 10 built-in templates (5 real-estate, 5 general)', () => {
-    assert.equal(BUILTIN_TEMPLATES.length, 10);
+  it('should register built-in templates (5 real-estate, 8 general)', () => {
+    assert.equal(BUILTIN_TEMPLATES.length, 13);
     assert.equal(REAL_ESTATE_TEMPLATES.length, 5);
-    assert.equal(GENERAL_TEMPLATES.length, 5);
+    assert.equal(GENERAL_TEMPLATES.length, 8);
 
     const all = getAllTemplates();
-    assert.equal(all.length, 10);
+    assert.equal(all.length, 13);
   });
 
   it('should contain all required 5 real-estate templates', () => {
@@ -31,13 +31,16 @@ describe('Meeting Template Library & Registry', () => {
     }
   });
 
-  it('should contain all required 5 general templates', () => {
+  it('should contain all required general templates', () => {
     const expectedIds = [
+      'gen-team-standup',
+      'gen-client-call',
       'gen-one-on-one',
+      'gen-sales-call',
+      'gen-project-planning',
       'gen-weekly-team-sync',
       'gen-project-kickoff',
-      'gen-retrospective',
-      'gen-sales-call'
+      'gen-retrospective'
     ];
 
     for (const id of expectedIds) {
@@ -80,7 +83,7 @@ describe('Meeting Template Library & Registry', () => {
     assert.ok(reTemplates.every(t => t.category === 'real-estate'));
 
     const genTemplates = getTemplatesByCategory('general');
-    assert.equal(genTemplates.length, 5);
+    assert.equal(genTemplates.length, 8);
     assert.ok(genTemplates.every(t => t.category === 'general'));
   });
 

@@ -8,11 +8,14 @@ import { financingConsultationTemplate } from './data/real-estate/financing-cons
 import { closingFollowupTemplate } from './data/real-estate/closing-followup.js';
 
 // General Templates
+import { teamStandupTemplate } from './data/general/team-standup.js';
+import { clientCallTemplate } from './data/general/client-call.js';
 import { oneOnOneTemplate } from './data/general/one-on-one.js';
+import { salesCallTemplate } from './data/general/sales-call.js';
+import { projectPlanningTemplate } from './data/general/project-planning.js';
 import { weeklyTeamSyncTemplate } from './data/general/weekly-team-sync.js';
 import { projectKickoffTemplate } from './data/general/project-kickoff.js';
 import { retrospectiveTemplate } from './data/general/retrospective.js';
-import { salesCallTemplate } from './data/general/sales-call.js';
 
 export const REAL_ESTATE_TEMPLATES: readonly MeetingTemplate[] = [
   clientDiscoveryTemplate,
@@ -23,11 +26,14 @@ export const REAL_ESTATE_TEMPLATES: readonly MeetingTemplate[] = [
 ];
 
 export const GENERAL_TEMPLATES: readonly MeetingTemplate[] = [
+  teamStandupTemplate,
+  clientCallTemplate,
   oneOnOneTemplate,
+  salesCallTemplate,
+  projectPlanningTemplate,
   weeklyTeamSyncTemplate,
   projectKickoffTemplate,
-  retrospectiveTemplate,
-  salesCallTemplate
+  retrospectiveTemplate
 ];
 
 export const BUILTIN_TEMPLATES: readonly MeetingTemplate[] = [

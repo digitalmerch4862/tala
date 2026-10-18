@@ -35,7 +35,7 @@ export const RedactionModal: React.FC<RedactionModalProps> = ({
     if (!targetPhrase.trim()) return;
     setIsApplying(true);
     try {
-      const updated = await redactMeetingContent(meeting, targetPhrase.trim(), 'Rad (BDM)');
+      const updated = await redactMeetingContent(meeting, targetPhrase.trim(), meeting.participants[0] || 'Host');
       onUpdateMeeting(updated);
       setSuccessMessage(`Successfully redacted "${targetPhrase.trim()}" and recorded tamper-evident audit log.`);
       setTargetPhrase('');
