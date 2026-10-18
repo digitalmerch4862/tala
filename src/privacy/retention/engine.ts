@@ -1,9 +1,4 @@
-import { 
-  MeetingRetentionMetadata, 
-  PurgeEvaluationResult, 
-  PurgePlan, 
-  RetentionPolicy 
-} from '../types/retention.js';
+import type { MeetingRetentionMetadata, PurgeEvaluationResult, PurgePlan, RetentionPolicy } from '../types/retention.js';
 import { 
   DEFAULT_GLOBAL_POLICY, 
   LEGAL_HOLD_POLICY 

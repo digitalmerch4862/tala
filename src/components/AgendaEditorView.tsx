@@ -18,19 +18,9 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import { Meeting } from '../types';
-import {
-  Agenda,
-  AgendaItem,
-  TalkingPoint,
-  AgendaManager,
-  calculateTimeboxSummary,
-  createFollowUpAgendaWithCarryOver,
-  getAllTemplates,
-  instantiateAgendaFromTemplate,
-  REAL_ESTATE_TEMPLATES,
-  MeetingTemplate as PrepTemplate,
-} from '../prep';
+import type { Meeting } from '../types';
+import { AgendaManager, calculateTimeboxSummary, createFollowUpAgendaWithCarryOver, getAllTemplates, instantiateAgendaFromTemplate, REAL_ESTATE_TEMPLATES } from '../prep';
+import type { Agenda, AgendaItem, TalkingPoint, MeetingTemplate as PrepTemplate } from '../prep';
 import { generatePreMeetingBrief } from '../services/aiIntelligence';
 import { saveMeeting } from '../services/storage';
 import { pushFollowUpCalendarEvent } from '../services/composioCalendar';

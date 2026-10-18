@@ -11,7 +11,7 @@ import {
   Sparkles,
   Building2,
 } from 'lucide-react';
-import { Channel } from '../types';
+import type { Channel } from '../types';
 
 export type MainView = 'library' | 'actions' | 'templates' | 'global_chat';
 

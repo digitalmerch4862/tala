@@ -1,4 +1,4 @@
-import { TranscriptUtterance, MeetingSummary, ActionItem, Priority, PreMeetingBrief, Meeting } from '../types';
+import type { TranscriptUtterance, MeetingSummary, ActionItem, Priority, PreMeetingBrief, Meeting } from '../types';
 
 export interface AIIntelligenceEngine {
   generateSummary(

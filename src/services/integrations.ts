@@ -1,4 +1,4 @@
-import { Meeting, WebhookConfig } from '../types';
+import type { Meeting, WebhookConfig } from '../types';
 
 export interface ParsedICSEvent {
   title: string;

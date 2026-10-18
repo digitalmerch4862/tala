@@ -12,7 +12,7 @@ import {
   Upload,
 } from 'lucide-react';
 import { MEETING_TEMPLATES } from '../templates/meetingTemplates';
-import { MeetingTemplate } from '../types';
+import type { MeetingTemplate } from '../types';
 
 interface TemplatesViewProps {
   onStartWithTemplate: (templateId: string, mode: 'record' | 'upload') => void;

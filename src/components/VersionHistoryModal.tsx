@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, History, RotateCcw, Check, Calendar, User, Eye, FileText, ArrowRight } from 'lucide-react';
-import { Meeting, NoteVersion, ActionItem } from '../types';
+import type { Meeting, NoteVersion, ActionItem } from '../types';
 import { getNoteVersions, saveNoteVersion } from '../services/storage';
 
 interface VersionHistoryModalProps {

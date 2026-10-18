@@ -14,7 +14,7 @@ import {
   LayoutTemplate,
   Loader2,
 } from 'lucide-react';
-import { Channel, Meeting, MeetingTemplate } from '../types';
+import type { Channel, Meeting, MeetingTemplate } from '../types';
 import { MEETING_TEMPLATES } from '../templates/meetingTemplates';
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE_CODE } from '../languages/languages';
 import { AudioRecorderService } from '../services/audioRecorder';

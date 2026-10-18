@@ -1,4 +1,4 @@
-import { RetentionPolicy } from '../types/retention.js';
+import type { RetentionPolicy } from '../types/retention.js';
 
 export const ZERO_DAY_POLICY: RetentionPolicy = {
   id: 'policy-zero-day',

@@ -1,4 +1,4 @@
-import { LanguageOption } from '../types';
+import type { LanguageOption } from '../types';
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
   { code: 'en-US', name: 'English (US)', nativeName: 'English (US)', flag: '🇺🇸' },

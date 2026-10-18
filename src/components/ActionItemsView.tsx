@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   ArrowRight,
 } from 'lucide-react';
-import { ActionItem, ActionItemStatus, Priority, Meeting } from '../types';
+import type { ActionItem, ActionItemStatus, Priority, Meeting } from '../types';
 
 interface ActionItemsViewProps {
   actionItems: ActionItem[];

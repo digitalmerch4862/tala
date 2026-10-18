@@ -11,7 +11,7 @@ import {
   User,
   ExternalLink,
 } from 'lucide-react';
-import { Meeting } from '../types';
+import type { Meeting } from '../types';
 import { queryAcrossAllMeetings } from '../services/aiIntelligence';
 
 interface GlobalChatViewProps {

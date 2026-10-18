@@ -26,7 +26,7 @@ import {
   DollarSign,
   AlertCircle,
 } from 'lucide-react';
-import { Meeting, ActionItem, ActionItemStatus, Priority, TranscriptUtterance, TalaSettings } from '../types';
+import type { Meeting, ActionItem, ActionItemStatus, Priority, TranscriptUtterance, TalaSettings } from '../types';
 import { getAIIntelligenceEngine } from '../services/aiIntelligence';
 import { AgendaEditorView } from './AgendaEditorView';
 import { VersionHistoryModal } from './VersionHistoryModal';

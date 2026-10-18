@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { X, ShieldAlert, Check, AlertCircle, Eye, RefreshCw, Lock } from 'lucide-react';
-import { Meeting } from '../types';
+import type { Meeting } from '../types';
 import { redactMeetingContent } from '../services/privacy';
 import { redactText as redactPIIText } from '../privacy/redaction';
-import { PiiCategory } from '../privacy/types/pii';
+import type { PiiCategory } from '../privacy/types/pii';
 
 interface RedactionModalProps {
   isOpen: boolean;

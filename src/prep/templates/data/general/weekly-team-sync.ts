@@ -1,4 +1,4 @@
-import { MeetingTemplate } from '../../../types/template.js';
+import type { MeetingTemplate } from '../../../types/template.js';
 
 export const weeklyTeamSyncTemplate: MeetingTemplate = {
   id: 'gen-weekly-team-sync',

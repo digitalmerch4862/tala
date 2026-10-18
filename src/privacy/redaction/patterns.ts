@@ -1,4 +1,4 @@
-import { GovIdSubType } from '../types/pii.js';
+import type { GovIdSubType } from '../types/pii.js';
 
 export const PATTERNS = {
   email: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/gi,

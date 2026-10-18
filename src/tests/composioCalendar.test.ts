@@ -1,11 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import handler, { handleCalendarApiRequest } from '../../api/calendar';
-import {
-  FakeComposioCalendarAdapter,
-  ServerComposioCalendarAdapter,
-  linkCalendarEventToMeeting,
-  ComposioCalendarRouteResponse,
-} from '../services/composioCalendar';
+import { FakeComposioCalendarAdapter, ServerComposioCalendarAdapter, linkCalendarEventToMeeting } from '../services/composioCalendar';
+import type { ComposioCalendarRouteResponse } from '../services/composioCalendar';
 
 describe('Composio Google Calendar Serverless Route & Adapter', () => {
   beforeEach(() => {

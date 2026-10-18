@@ -1,5 +1,6 @@
-import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { Meeting, Channel, ActionItem, TalaSettings, NoteVersion, AuditLogEntry } from '../types';
+import { openDB } from 'idb';
+import type { DBSchema, IDBPDatabase } from 'idb';
+import type { Meeting, Channel, ActionItem, TalaSettings, NoteVersion, AuditLogEntry } from '../types';
 import { DEFAULT_LANGUAGE_CODE } from '../languages/languages';
 
 interface TalaDB extends DBSchema {

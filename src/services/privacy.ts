@@ -1,4 +1,4 @@
-import { Meeting, TranscriptUtterance, AuditLogEntry } from '../types';
+import type { Meeting, TranscriptUtterance, AuditLogEntry } from '../types';
 import { saveAuditLog } from './storage';
 
 /**

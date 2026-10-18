@@ -1,10 +1,4 @@
-import { 
-  AuditAction, 
-  AuditActor, 
-  AuditEntry, 
-  AuditQueryFilter, 
-  AuditVerificationResult 
-} from '../types/audit.js';
+import type { AuditAction, AuditActor, AuditEntry, AuditQueryFilter, AuditVerificationResult } from '../types/audit.js';
 import { 
   computeEntryHash, 
   GENESIS_PREVIOUS_HASH 

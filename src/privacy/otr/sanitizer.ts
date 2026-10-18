@@ -1,8 +1,4 @@
-import { 
-  OtrSegment, 
-  SanitizedTranscriptResult, 
-  TranscriptUtterance 
-} from '../types/otr.js';
+import type { OtrSegment, SanitizedTranscriptResult, TranscriptUtterance } from '../types/otr.js';
 
 export interface SanitizeOptions {
   /** If true, replaces utterance text with '[OFF-THE-RECORD]'. If false, drops it entirely. Default: false */

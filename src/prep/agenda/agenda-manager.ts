@@ -1,24 +1,13 @@
-import { 
-  ActionItem,
-  Agenda, 
-  AgendaItem, 
-  AgendaItemStatus, 
-  CarryOverOptions, 
-  Participant, 
-  TalkingPoint, 
-  TimeboxSummary 
-} from '../types/agenda.js';
-import { MeetingTemplate } from '../types/template.js';
+import type { ActionItem, Agenda, AgendaItem, AgendaItemStatus, CarryOverOptions, Participant, TalkingPoint, TimeboxSummary } from '../types/agenda.js';
+import type { MeetingTemplate } from '../types/template.js';
 import { calculateTimeboxSummary } from './timebox.js';
 import { 
   carryOverUnfinishedItems, 
   extractUnfinishedItems, 
   createFollowUpAgendaWithCarryOver 
 } from './carry-over.js';
-import { 
-  instantiateAgendaFromTemplate, 
-  InstantiateAgendaOptions 
-} from '../templates/loader.js';
+import { instantiateAgendaFromTemplate } from '../templates/loader.js';
+import type { InstantiateAgendaOptions } from '../templates/loader.js';
 
 export type NewAgendaItemInput = {
   id?: string;

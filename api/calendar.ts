@@ -1,8 +1,5 @@
-import {
-  ComposioToolkitAdapter,
-  ComposioCalendarRouteResponse,
-  ServerComposioCalendarAdapter,
-} from '../src/services/composioCalendar';
+import { ServerComposioCalendarAdapter } from '../src/services/composioCalendar';
+import type { ComposioToolkitAdapter, ComposioCalendarRouteResponse } from '../src/services/composioCalendar';
 
 export interface ServerlessRequest {
   method?: string;

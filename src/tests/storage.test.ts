@@ -10,7 +10,7 @@ import {
   updateActionItemStatus,
   searchMeetings,
 } from '../services/storage';
-import { Meeting } from '../types';
+import type { Meeting } from '../types';
 
 describe('Tala Storage & Meeting Library Engine', () => {
   beforeEach(async () => {

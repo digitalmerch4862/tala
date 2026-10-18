@@ -1,2 +1,2 @@
-export * from './template.js';
-export * from './agenda.js';
+export type * from './template.js';
+export type * from './agenda.js';

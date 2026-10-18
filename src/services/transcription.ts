@@ -1,4 +1,4 @@
-import { TranscriptUtterance } from '../types';
+import type { TranscriptUtterance } from '../types';
 
 export interface TranscriptionOptions {
   templateId?: string;

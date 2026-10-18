@@ -20,7 +20,7 @@ import {
   Shield,
   Layers,
 } from 'lucide-react';
-import { TalaSettings, AuditLogEntry } from '../types';
+import type { TalaSettings, AuditLogEntry } from '../types';
 import { SUPPORTED_LANGUAGES } from '../languages/languages';
 import { purgeExpiredMeetings, getAllAuditLogs, saveAuditLog } from '../services/storage';
 import { NEEDS_KEYS_ADAPTERS, COMPOSIO_CALENDAR_ADAPTER_SPEC } from '../services/integrations';

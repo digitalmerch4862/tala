@@ -6,7 +6,7 @@ import {
   redactTranscript,
   isValidLuhn
 } from '../../privacy/redaction/index.js';
-import { TranscriptUtterance } from '../../privacy/types/index.js';
+import type { TranscriptUtterance } from '../../privacy/types/index.js';
 
 describe('Redaction Engine - PII and Notes Redaction', () => {
   it('should redact email addresses', () => {

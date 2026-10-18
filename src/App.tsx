@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Meeting, Channel, TalaSettings, ActionItemStatus } from './types';
+import type { Meeting, Channel, TalaSettings, ActionItemStatus } from './types';
 import {
   initStorage,
   getAllMeetings,
@@ -11,7 +11,8 @@ import {
   saveSettings,
   purgeExpiredMeetings,
 } from './services/storage';
-import { Sidebar, MainView } from './components/Sidebar';
+import { Sidebar } from './components/Sidebar';
+import type { MainView } from './components/Sidebar';
 import { MeetingLibrary } from './components/MeetingLibrary';
 import { MeetingDetailView } from './components/MeetingDetailView';
 import { ActionItemsView } from './components/ActionItemsView';

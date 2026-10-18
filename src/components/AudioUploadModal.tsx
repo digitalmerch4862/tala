@@ -9,7 +9,7 @@ import {
   Globe,
   LayoutTemplate,
 } from 'lucide-react';
-import { Channel, Meeting } from '../types';
+import type { Channel, Meeting } from '../types';
 import { MEETING_TEMPLATES } from '../templates/meetingTemplates';
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE_CODE } from '../languages/languages';
 import { getTranscriptionEngine } from '../services/transcription';

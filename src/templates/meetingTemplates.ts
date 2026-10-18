@@ -1,4 +1,4 @@
-import { MeetingTemplate } from '../types';
+import type { MeetingTemplate } from '../types';
 
 export const MEETING_TEMPLATES: MeetingTemplate[] = [
   {

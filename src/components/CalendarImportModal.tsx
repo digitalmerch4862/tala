@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Upload, Check, AlertCircle, Plus, RefreshCw, Link2 } from 'lucide-react';
-import { parseICS, ParsedICSEvent } from '../services/integrations';
-import {
-  ComposioCalendarEvent,
-  fetchUpcomingCalendarEvents,
-  linkCalendarEventToMeeting,
-  requestLinkCalendarEvent,
-} from '../services/composioCalendar';
-import { Meeting } from '../types';
+import { parseICS } from '../services/integrations';
+import type { ParsedICSEvent } from '../services/integrations';
+import { fetchUpcomingCalendarEvents, linkCalendarEventToMeeting, requestLinkCalendarEvent } from '../services/composioCalendar';
+import type { ComposioCalendarEvent } from '../services/composioCalendar';
+import type { Meeting } from '../types';
 
 interface CalendarImportModalProps {
   isOpen: boolean;

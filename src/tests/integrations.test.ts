@@ -7,7 +7,7 @@ import {
   exportToNotionMarkdown,
   NEEDS_KEYS_ADAPTERS,
 } from '../services/integrations';
-import { Meeting, WebhookConfig } from '../types';
+import type { Meeting, WebhookConfig } from '../types';
 
 describe('Integrations Service', () => {
   const sampleMeeting: Meeting = {

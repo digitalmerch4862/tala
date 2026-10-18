@@ -15,7 +15,7 @@ import {
   Building,
   Check,
 } from 'lucide-react';
-import { Meeting, Channel } from '../types';
+import type { Meeting, Channel } from '../types';
 
 interface MeetingLibraryProps {
   meetings: Meeting[];

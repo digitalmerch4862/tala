@@ -1,4 +1,4 @@
-export * from './pii.js';
-export * from './retention.js';
-export * from './audit.js';
-export * from './otr.js';
+export type * from './pii.js';
+export type * from './retention.js';
+export type * from './audit.js';
+export type * from './otr.js';

@@ -14,7 +14,7 @@ import {
   Loader2,
   AlertCircle,
 } from 'lucide-react';
-import { Meeting, TalaSettings } from '../types';
+import type { Meeting, TalaSettings } from '../types';
 import {
   exportToCRMJson,
   exportToCRMCSV,

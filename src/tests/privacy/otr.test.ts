@@ -5,7 +5,7 @@ import {
   stripOtrFromUtterances, 
   stripOtrFromTimestampedText 
 } from '../../privacy/otr/index.js';
-import { TranscriptUtterance } from '../../privacy/types/index.js';
+import type { TranscriptUtterance } from '../../privacy/types/index.js';
 
 describe('Off-The-Record (OTR) Segments Engine', () => {
   it('should mark segments and consolidate overlapping or adjacent intervals', () => {

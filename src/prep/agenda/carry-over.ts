@@ -1,9 +1,4 @@
-import { 
-  Agenda, 
-  AgendaItem, 
-  AgendaItemStatus, 
-  CarryOverOptions 
-} from '../types/agenda.js';
+import type { Agenda, AgendaItem, AgendaItemStatus, CarryOverOptions } from '../types/agenda.js';
 
 const DEFAULT_UNFINISHED_STATUSES: AgendaItemStatus[] = ['pending', 'in_progress'];
 

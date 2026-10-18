@@ -1,8 +1,4 @@
-import { 
-  AgendaItem, 
-  TimeboxSummary, 
-  TimeboxTimelineEntry 
-} from '../types/agenda.js';
+import type { AgendaItem, TimeboxSummary, TimeboxTimelineEntry } from '../types/agenda.js';
 
 /**
  * Calculates timebox metrics and builds a chronological timeline from agenda items.

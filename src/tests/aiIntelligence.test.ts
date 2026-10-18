@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { MockAIProvider } from '../services/aiIntelligence';
-import { TranscriptUtterance } from '../types';
+import type { TranscriptUtterance } from '../types';
 
 describe('Tala AI Intelligence Engine', () => {
   const provider = new MockAIProvider();

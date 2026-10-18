@@ -1,4 +1,4 @@
-import { Meeting } from '../types';
+import type { Meeting } from '../types';
 
 export interface ComposioCalendarEvent {
   id: string;

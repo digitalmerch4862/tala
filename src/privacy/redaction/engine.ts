@@ -1,11 +1,4 @@
-import { 
-  GovIdSubType, 
-  PiiCategory, 
-  RedactedSpan, 
-  RedactionOptions, 
-  RedactionResult, 
-  TranscriptUtterance 
-} from '../types/index.js';
+import type { GovIdSubType, PiiCategory, RedactedSpan, RedactionOptions, RedactionResult, TranscriptUtterance } from '../types/index.js';
 import { isValidLuhn } from './luhn.js';
 import { buildAddressRegex, PATTERNS } from './patterns.js';
 

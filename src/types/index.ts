@@ -1,4 +1,4 @@
-import { Agenda } from '../prep/types/agenda';
+import type { Agenda } from '../prep/types/agenda';
 
 export type MeetingStatus = 'recorded' | 'uploaded' | 'transcribing' | 'completed';
 

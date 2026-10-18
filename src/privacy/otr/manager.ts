@@ -1,4 +1,4 @@
-import { OtrSegment } from '../types/otr.js';
+import type { OtrSegment } from '../types/otr.js';
 
 export class OtrManager {
   private segments: OtrSegment[] = [];

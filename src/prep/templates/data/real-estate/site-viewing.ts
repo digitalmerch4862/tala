@@ -1,4 +1,4 @@
-import { MeetingTemplate } from '../../../types/template.js';
+import type { MeetingTemplate } from '../../../types/template.js';
 
 export const siteViewingTemplate: MeetingTemplate = {
   id: 're-site-viewing',

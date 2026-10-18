@@ -1,4 +1,4 @@
-import { AuditActor } from '../types/audit.js';
+import type { AuditActor } from '../types/audit.js';
 
 export const GENESIS_PREVIOUS_HASH = '0000000000000000000000000000000000000000000000000000000000000000';
 

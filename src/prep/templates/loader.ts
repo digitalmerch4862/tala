@@ -1,14 +1,5 @@
-import { 
-  MeetingTemplate, 
-  TemplateCategory, 
-  TemplateFilterOptions, 
-  TemplateSection 
-} from '../types/template.js';
-import { 
-  Agenda, 
-  AgendaItem, 
-  Participant 
-} from '../types/agenda.js';
+import type { MeetingTemplate, TemplateCategory, TemplateFilterOptions, TemplateSection } from '../types/template.js';
+import type { Agenda, AgendaItem, Participant } from '../types/agenda.js';
 import { BUILTIN_TEMPLATES } from './registry.js';
 
 export interface InstantiateAgendaOptions {

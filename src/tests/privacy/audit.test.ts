@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { AuditLog } from '../../privacy/audit/index.js';
 import { GENESIS_PREVIOUS_HASH } from '../../privacy/audit/crypto.js';
-import { AuditActor, AuditEntry } from '../../privacy/types/index.js';
+import type { AuditActor, AuditEntry } from '../../privacy/types/index.js';
 
 describe('Audit Log with Cryptographic Hash Chain', () => {
   const testActor: AuditActor = {

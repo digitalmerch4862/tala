@@ -1,18 +1,7 @@
 import { describe, it } from 'vitest';
 import assert from 'node:assert/strict';
-import { 
-  getAllTemplates, 
-  getTemplateById, 
-  getTemplatesByCategory, 
-  searchTemplates, 
-  filterTemplates, 
-  validateTemplate,
-  instantiateAgendaFromTemplate,
-  REAL_ESTATE_TEMPLATES,
-  GENERAL_TEMPLATES,
-  BUILTIN_TEMPLATES,
-  MeetingTemplate
-} from '../../prep/templates/index.js';
+import { getAllTemplates, getTemplateById, getTemplatesByCategory, searchTemplates, filterTemplates, validateTemplate, instantiateAgendaFromTemplate, REAL_ESTATE_TEMPLATES, GENERAL_TEMPLATES, BUILTIN_TEMPLATES } from '../../prep/templates/index.js';
+import type { MeetingTemplate } from '../../prep/templates/index.js';
 
 describe('Meeting Template Library & Registry', () => {
   it('should register exactly 10 built-in templates (5 real-estate, 5 general)', () => {

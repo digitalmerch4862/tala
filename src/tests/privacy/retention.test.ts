@@ -11,7 +11,7 @@ import {
   INDEFINITE_POLICY,
   LEGAL_HOLD_POLICY
 } from '../../privacy/retention/index.js';
-import { MeetingRetentionMetadata } from '../../privacy/types/index.js';
+import type { MeetingRetentionMetadata } from '../../privacy/types/index.js';
 
 describe('Retention Policy Engine', () => {
   const baseNow = new Date('2026-10-17T10:00:00.000Z');

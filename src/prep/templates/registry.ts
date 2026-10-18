@@ -1,4 +1,4 @@
-import { MeetingTemplate } from '../types/template.js';
+import type { MeetingTemplate } from '../types/template.js';
 
 // Real Estate Templates
 import { clientDiscoveryTemplate } from './data/real-estate/client-discovery.js';
