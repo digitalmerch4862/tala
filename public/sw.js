@@ -1,5 +1,13 @@
 const CACHE_NAME = 'tala-pwa-v1';
-const PRECACHE_URLS = ['/', '/index.html', '/manifest.webmanifest'];
+const PRECACHE_URLS = [
+  '/',
+  '/index.html',
+  '/manifest.webmanifest',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/icon-maskable-512.png',
+  '/icons/icon.svg',
+];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -26,6 +34,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
@@ -38,7 +51,11 @@ self.addEventListener('fetch', (event) => {
       .catch(async () => {
         const cached = await caches.match(event.request);
         if (cached) return cached;
-        return caches.match('/index.html');
+        if (event.request.mode === 'navigate') {
+          const fallback = await caches.match('/index.html');
+          if (fallback) return fallback;
+        }
+        return Response.error();
       })
   );
 });
