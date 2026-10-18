@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: './e2e',
   timeout: 30000,
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: process.env.BASE_URL || "http://localhost:5173",
     trace: 'on-first-retry',
     permissions: ['microphone', 'clipboard-read', 'clipboard-write'],
   },

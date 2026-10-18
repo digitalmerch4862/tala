@@ -35,7 +35,7 @@ export const GlobalChatView: React.FC<GlobalChatViewProps> = ({
     {
       id: 'welcome',
       sender: 'assistant',
-      text: `Kumusta! I am your **Tala AI Executive Assistant**. I have indexed all **${meetings.length} meetings** across your deal pipeline. Ask me anything about client requirements, property locations, pending action items, or financing agreements across all recordings.`,
+      text: `Kumusta! I am your **Tala AI Executive Assistant**. I have indexed all **${meetings.length} meetings** across your workspaces. Ask me anything about project milestones, pending action items, client feedback, or team decisions across all recordings.`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -43,10 +43,10 @@ export const GlobalChatView: React.FC<GlobalChatViewProps> = ({
   const [isSearching, setIsSearching] = useState(false);
 
   const suggestedQueries = [
-    'What deals or properties were discussed in Makati or BGC?',
     'Which action items are currently pending or overdue?',
-    'What were the common client objections regarding financing or interest rates?',
-    'Summarize our discussion with prospective buyers this month.',
+    'Summarize key decisions across all team meetings this month.',
+    'What are the active project blockers and deliverables?',
+    'What client feedback and scope adjustments were discussed?',
   ];
 
   const handleSend = async (queryText?: string) => {

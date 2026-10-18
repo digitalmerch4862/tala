@@ -44,7 +44,7 @@ export function parseICS(icsData: string): ParsedICSEvent[] {
           endDate: current.endDate,
           durationMinutes: current.durationMinutes || 60,
           location: current.location,
-          attendees: current.attendees && current.attendees.length > 0 ? current.attendees : ['Rad (BDM)'],
+          attendees: current.attendees && current.attendees.length > 0 ? current.attendees : ['Host'],
         });
       }
       inEvent = false;

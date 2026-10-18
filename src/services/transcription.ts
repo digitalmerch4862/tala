@@ -28,7 +28,7 @@ export class MockTranscriptionEngine implements TranscriptionEngine {
   ): Promise<TranscriptUtterance[]> {
     // Generate realistic speaker-labeled utterances matching the template and language
     const templateId = options?.templateId || 'general-meeting';
-    const participants = options?.participants || ['Rad (BDM)', 'Client / Counterpart'];
+    const participants = options?.participants || ['Host', 'Speaker 1'];
 
     return this.generateUtterancesForTemplate(templateId, language, participants);
   }
@@ -39,10 +39,10 @@ export class MockTranscriptionEngine implements TranscriptionEngine {
   ): () => void {
     let index = 0;
     const sampleSentences = [
-      { speaker: 'Rad (BDM)', text: 'Thank you for joining today. Let us review the project location and financial terms.' },
-      { speaker: 'Counterpart', text: 'Yes, we are eager to see the unit specifications and turnover dates.' },
-      { speaker: 'Rad (BDM)', text: 'The masterplan features direct access to the main arterial avenue with premium amenities.' },
-      { speaker: 'Counterpart', text: 'That aligns with our target budget envelope and investment timeline.' },
+      { speaker: 'Host', text: 'Thank you for joining today. Let us review the agenda and deliverables.' },
+      { speaker: 'Speaker 1', text: 'Yes, we are eager to see the milestone progress and target dates.' },
+      { speaker: 'Host', text: 'The project roadmap aligns with our target milestones and resource allocation.' },
+      { speaker: 'Speaker 1', text: 'That aligns with our target budget envelope and timeline.' },
     ];
 
     const interval = setInterval(() => {
@@ -68,8 +68,8 @@ export class MockTranscriptionEngine implements TranscriptionEngine {
     language: string,
     participants: string[]
   ): TranscriptUtterance[] {
-    const speaker1 = participants[0] || 'Rad (BDM)';
-    const speaker2 = participants[1] || 'Client / Broker';
+    const speaker1 = participants[0] || 'Host';
+    const speaker2 = participants[1] || 'Speaker 1';
 
     if (templateId === 'client-discovery') {
       return [

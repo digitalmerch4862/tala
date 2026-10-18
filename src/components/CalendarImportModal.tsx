@@ -303,7 +303,7 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
                 }
               }}
               data-testid="ics-raw-textarea"
-              placeholder="BEGIN:VCALENDAR&#10;VERSION:2.0&#10;BEGIN:VEVENT&#10;SUMMARY:Shang Residences Viewing&#10;..."
+              placeholder="BEGIN:VCALENDAR&#10;VERSION:2.0&#10;BEGIN:VEVENT&#10;SUMMARY:Quarterly Product Roadmap Review&#10;..."
               className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500"
             />
           </div>

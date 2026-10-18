@@ -19,7 +19,7 @@ describe('Integrations Service', () => {
     channelName: 'Acquisitions',
     templateId: 'tpl-commercial-real-estate',
     templateName: 'Commercial Real Estate Acquisition',
-    participants: ['Rad (BDM)', 'John (Investor)', 'Maria (Legal)'],
+    participants: ['Host', 'John (Investor)', 'Maria (Legal)'],
     summary: {
       overview: 'High-level review of Makati office building acquisition.',
       keyDiscussionPoints: [
@@ -48,7 +48,7 @@ describe('Integrations Service', () => {
         meetingId: 'm-sample-123',
         meetingTitle: 'Acme Property Acquisition Review',
         title: 'Submit Letter of Intent to Seller',
-        assignee: 'Rad (BDM)',
+        assignee: 'Host',
         dueDate: '2026-10-20',
         status: 'todo',
         priority: 'high',
@@ -69,7 +69,7 @@ describe('Integrations Service', () => {
     transcript: [
       {
         id: 'utt-1',
-        speaker: 'Rad (BDM)',
+        speaker: 'Host',
         text: 'Welcome everyone, let us finalize our offer terms today.',
         startSec: 15,
         endSec: 25,
@@ -92,7 +92,7 @@ DESCRIPTION:Executive review with land owners and appraisal surveyors.
 LOCATION:Taguig City, Metro Manila
 DTSTART:20261020T090000Z
 DTEND:20261020T100000Z
-ATTENDEE;CN=Rad BDM:mailto:rad@dmerch.ph
+ATTENDEE;CN=Host:mailto:host@team.internal
 ATTENDEE;CN=Atty Santos:mailto:santos@legal.ph
 END:VEVENT
 END:VCALENDAR`;
@@ -105,7 +105,7 @@ END:VCALENDAR`;
       expect(events[0].startDate).toBe('2026-10-20T09:00:00.000Z');
       expect(events[0].endDate).toBe('2026-10-20T10:00:00.000Z');
       expect(events[0].durationMinutes).toBe(60);
-      expect(events[0].attendees).toEqual(['Rad BDM', 'Atty Santos']);
+      expect(events[0].attendees).toEqual(['Host', 'Atty Santos']);
     });
 
     it('should handle multi-event ICS calendar content', () => {

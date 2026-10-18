@@ -24,12 +24,12 @@ describe('Tala Transcription Engine & 92 Languages', () => {
     const utterances = await engine.transcribeAudio(mockBlob, 'fil-PH', {
       templateId: 'client-discovery',
       meetingTitle: 'Client Consultation',
-      participants: ['Rad (BDM)', 'Buyer Atty. Tan'],
+      participants: ['Host', 'Client Partner'],
     });
 
     expect(utterances.length).toBeGreaterThan(0);
-    expect(utterances[0].speaker).toBe('Rad (BDM)');
-    expect(utterances[1].speaker).toBe('Buyer Atty. Tan');
+    expect(utterances[0].speaker).toBe('Host');
+    expect(utterances[1].speaker).toBe('Client Partner');
     expect(utterances[0].startSec).toBe(0);
     expect(utterances[0].endSec).toBeGreaterThan(0);
     expect(utterances[0].text.length).toBeGreaterThan(10);

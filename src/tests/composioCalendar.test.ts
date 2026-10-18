@@ -45,12 +45,12 @@ describe('Composio Google Calendar Serverless Route & Adapter', () => {
         method: 'POST',
         body: {
           action: 'create_event',
-          title: 'Follow-up: Shang Residences BGC — Contract Signing',
-          description: 'Review carried-over reservation agreement items.',
+          title: 'Follow-up: Client Meeting — Scope Review',
+          description: 'Review carried-over action items and deliverables.',
           startTime: '2026-10-28T10:00:00.000Z',
           durationMinutes: 45,
-          attendees: ['Rad (BDM)', 'Atty. Marco Tan'],
-          location: 'Shangri-La at the Fort, BGC',
+          attendees: ['Host', 'Client Partner'],
+          location: 'Virtual Conference Room',
         },
       },
       fakeAdapter
@@ -59,8 +59,8 @@ describe('Composio Google Calendar Serverless Route & Adapter', () => {
     expect(res.statusCode).toBe(201);
     expect(res.body.enabled).toBe(true);
     expect(res.body.event).toBeDefined();
-    expect(res.body.event?.title).toBe('Follow-up: Shang Residences BGC — Contract Signing');
-    expect(res.body.event?.attendees).toEqual(['Rad (BDM)', 'Atty. Marco Tan']);
+    expect(res.body.event?.title).toBe('Follow-up: Client Meeting — Scope Review');
+    expect(res.body.event?.attendees).toEqual(['Host', 'Client Partner']);
     expect(res.body.event?.durationMinutes).toBe(45);
   });
 
@@ -133,7 +133,7 @@ describe('Composio Google Calendar Serverless Route & Adapter', () => {
               description: 'Quarterly portfolio review',
               start: { dateTime: '2026-10-30T08:00:00.000Z' },
               end: { dateTime: '2026-10-30T09:00:00.000Z' },
-              attendees: [{ displayName: 'Rad (BDM)' }, { email: 'client@ayala.ph' }],
+              attendees: [{ displayName: 'Host' }, { email: 'client@partner.com' }],
               location: 'BGC Taguig',
             },
           ],
@@ -148,7 +148,7 @@ describe('Composio Google Calendar Serverless Route & Adapter', () => {
     const events = await adapter.listUpcomingEvents();
     expect(events.length).toBe(1);
     expect(events[0].title).toBe('BGC Executive Portfolio Sync');
-    expect(events[0].attendees).toEqual(['Rad (BDM)', 'client@ayala.ph']);
+    expect(events[0].attendees).toEqual(['Host', 'client@partner.com']);
     expect(mockFetch).toHaveBeenCalledWith(
       'https://backend.composio.dev/api/v2/actions/GOOGLECALENDAR_FIND_EVENT/execute',
       expect.objectContaining({

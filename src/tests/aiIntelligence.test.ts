@@ -8,7 +8,7 @@ describe('Tala AI Intelligence Engine', () => {
   const mockClientDiscoveryTranscript: TranscriptUtterance[] = [
     {
       id: 'utt-1',
-      speaker: 'Rad (BDM)',
+      speaker: 'Host',
       text: 'Good day! Thanks for meeting today. What specific condominium properties are you exploring in BGC?',
       startSec: 0,
       endSec: 10,
@@ -16,7 +16,7 @@ describe('Tala AI Intelligence Engine', () => {
     {
       id: 'utt-2',
       speaker: 'Sarah Tan',
-      text: 'Hi Rad. We want a 2-bedroom pre-selling unit with a budget of PHP 32M to 35M in Bonifacio Global City.',
+      text: 'Hello. We want a 2-bedroom pre-selling unit with a budget of PHP 32M to 35M in Bonifacio Global City.',
       startSec: 11,
       endSec: 25,
     },
@@ -26,7 +26,7 @@ describe('Tala AI Intelligence Engine', () => {
     const summary = await provider.generateSummary(
       mockClientDiscoveryTranscript,
       'client-discovery',
-      'Shang Residences BGC Discovery'
+      'Client Discovery Consultation'
     );
 
     expect(summary.overview).toContain('Executive property discovery session');
@@ -43,7 +43,7 @@ describe('Tala AI Intelligence Engine', () => {
     const transcriptWithComputation: TranscriptUtterance[] = [
       {
         id: 'u-1',
-        speaker: 'Rad (BDM)',
+        speaker: 'Host',
         text: 'I will prepare the official computation sheet and schedule a private showroom viewing.',
         startSec: 0,
         endSec: 10,
@@ -59,7 +59,7 @@ describe('Tala AI Intelligence Engine', () => {
     expect(actionItems.length).toBeGreaterThanOrEqual(1);
     const computationTask = actionItems.find((a) => a.title.toLowerCase().includes('computation'));
     expect(computationTask).toBeDefined();
-    expect(computationTask?.assignee).toBe('Rad (BDM)');
+    expect(computationTask?.assignee).toBe('Host');
     expect(computationTask?.priority).toBe('high');
     expect(computationTask?.status).toBe('todo');
   });

@@ -17,62 +17,63 @@ describe('Tala Storage & Meeting Library Engine', () => {
     await initStorage();
   });
 
-  it('initializes default channels for real estate business development', async () => {
+  it('initializes default channels for team collaboration and syncs', async () => {
     const channels = await getAllChannels();
     expect(channels.length).toBeGreaterThanOrEqual(4);
     const names = channels.map((c) => c.name);
-    expect(names).toContain('Residential Pre-selling');
-    expect(names).toContain('Commercial & Land Deals');
-    expect(names).toContain('Broker & Agent Network');
+    expect(names).toContain('Team Syncs & Standups');
+    expect(names).toContain('Client Engagements');
+    expect(names).toContain('Project Planning & Strategy');
+    expect(names).toContain('Sales & Partnerships');
   });
 
-  it('seeds initial realistic demo meetings for Boss Rad', async () => {
+  it('seeds initial realistic general demo meetings', async () => {
     const meetings = await getAllMeetings();
-    expect(meetings.length).toBeGreaterThanOrEqual(2);
+    expect(meetings.length).toBeGreaterThanOrEqual(4);
 
-    const bgcMeeting = meetings.find((m) => m.title.includes('Shang Residences BGC'));
-    expect(bgcMeeting).toBeDefined();
-    expect(bgcMeeting?.summary.realEstateMetrics?.location).toBe('Bonifacio Global City (BGC), Taguig');
-    expect(bgcMeeting?.summary.realEstateMetrics?.budgetRange).toBe('PHP 32M - PHP 40M');
-    expect(bgcMeeting?.transcript.length).toBeGreaterThan(0);
+    const standupMeeting = meetings.find((m) => m.title.includes('Weekly Team Standup'));
+    expect(standupMeeting).toBeDefined();
+    expect(standupMeeting?.summary.overview).toContain('Weekly engineering team standup');
+    expect(standupMeeting?.transcript.length).toBeGreaterThan(0);
+    expect(standupMeeting?.summary.realEstateMetrics).toBeUndefined();
   });
 
   it('saves, retrieves, and deletes a meeting correctly', async () => {
     const testMeeting: Meeting = {
       id: 'test-meeting-101',
-      title: 'Aurelia Residences — VIP Client Tripping',
+      title: 'Project Kickoff — Client Onboarding',
       createdAt: new Date().toISOString(),
       durationSeconds: 1800,
-      channelId: 'residential-preselling',
-      channelName: 'Residential Pre-selling',
-      templateId: 'site-viewing',
-      templateName: 'Site Viewing & Tripping Notes',
+      channelId: 'client-calls',
+      channelName: 'Client Engagements',
+      templateId: 'client-call',
+      templateName: 'Client Call',
       language: 'fil-PH',
-      participants: ['Rad (BDM)', 'Dr. Jose Santos'],
+      participants: ['Host', 'Client Partner'],
       status: 'completed',
-      tags: ['BGC', 'Aurelia', 'Penthouse'],
+      tags: ['Onboarding', 'Client', 'Kickoff'],
       transcript: [
         {
           id: 't-1',
-          speaker: 'Rad (BDM)',
-          text: 'Magandang umaga Dr. Santos, welcome to Aurelia model suite.',
+          speaker: 'Host',
+          text: 'Magandang umaga, welcome to our onboarding session.',
           startSec: 0,
           endSec: 10,
         },
       ],
       summary: {
-        overview: 'Showroom inspection with Dr. Santos for Aurelia 3BR Penthouse.',
-        keyDiscussionPoints: ['Target price PHP 80M', 'Prefers high floor'],
-        decisionsMade: ['Agreed to reserve parking on podium 3'],
-        nextSteps: ['Prepare reservation agreement'],
+        overview: 'Onboarding sync with client partner to review deliverables.',
+        keyDiscussionPoints: ['Scope confirmed', 'Timeline set for 4 weeks'],
+        decisionsMade: ['Agreed to weekly progress check-ins'],
+        nextSteps: ['Prepare project kickoff charter'],
       },
       actionItems: [
         {
           id: 'act-test-1',
           meetingId: 'test-meeting-101',
-          meetingTitle: 'Aurelia Residences — VIP Client Tripping',
-          title: 'Draft Reservation Agreement for Penthouse Unit',
-          assignee: 'Rad (BDM)',
+          meetingTitle: 'Project Kickoff — Client Onboarding',
+          title: 'Draft Project Kickoff Charter',
+          assignee: 'Host',
           dueDate: '2026-10-20',
           priority: 'high',
           status: 'todo',
@@ -84,7 +85,7 @@ describe('Tala Storage & Meeting Library Engine', () => {
     await saveMeeting(testMeeting);
     const retrieved = await getMeetingById('test-meeting-101');
     expect(retrieved).toBeDefined();
-    expect(retrieved?.title).toBe('Aurelia Residences — VIP Client Tripping');
+    expect(retrieved?.title).toBe('Project Kickoff — Client Onboarding');
 
     // Update action item status
     await updateActionItemStatus('act-test-1', 'completed');
@@ -97,14 +98,14 @@ describe('Tala Storage & Meeting Library Engine', () => {
     expect(deleted).toBeUndefined();
   });
 
-  it('searches meetings across titles, tags, and real estate parameters', async () => {
+  it('searches meetings across titles, tags, and discussion points', async () => {
     const meetings = await getAllMeetings();
 
-    const bgcResults = searchMeetings(meetings, 'BGC');
-    expect(bgcResults.length).toBeGreaterThan(0);
+    const standupResults = searchMeetings(meetings, 'Standup');
+    expect(standupResults.length).toBeGreaterThan(0);
 
-    const vermosaResults = searchMeetings(meetings, 'Vermosa');
-    expect(vermosaResults.length).toBeGreaterThan(0);
+    const redesignResults = searchMeetings(meetings, 'Redesign');
+    expect(redesignResults.length).toBeGreaterThan(0);
 
     const nonExistent = searchMeetings(meetings, 'xyz_random_nonexistent_keyword_999');
     expect(nonExistent.length).toBe(0);

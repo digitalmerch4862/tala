@@ -3,41 +3,41 @@ import { handleCalendarApiRequest } from '../api/calendar';
 import { FakeComposioCalendarAdapter } from '../src/services/composioCalendar';
 
 test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
-  test('1. Library & Search: displays seeded real-estate meetings, metrics, and filters by channel', async ({
+  test('1. Library & Search: displays seeded meetings, metrics, and filters by channel', async ({
     page,
   }) => {
     await page.goto('/');
 
     // Check brand header
     await expect(page.locator('text=Tala AI')).toBeVisible();
-    await expect(page.locator('text=Real Estate Meeting Hub')).toBeVisible();
+    await expect(page.locator('text=Team Meeting Hub')).toBeVisible();
 
     // Verify metrics strip
     await expect(page.locator('[data-testid="metrics-total-meetings"]')).toBeVisible();
     await expect(page.locator('[data-testid="metrics-pending-actions"]')).toBeVisible();
 
     // Verify seeded meetings exist
-    await expect(page.locator('text=Shang Residences BGC')).toBeVisible();
-    await expect(page.locator('text=Nuvali Commercial Lot')).toBeVisible();
+    await expect(page.locator('text=Weekly Team Standup')).toBeVisible();
+    await expect(page.locator('text=Client Call — Website Redesign')).toBeVisible();
 
     // Search filter test
     const searchInput = page.locator('[data-testid="meeting-search-input"]');
-    await searchInput.fill('Shang Residences');
-    await expect(page.locator('text=Shang Residences BGC')).toBeVisible();
-    await expect(page.locator('text=Nuvali Commercial Lot')).not.toBeVisible();
+    await searchInput.fill('Website Redesign');
+    await expect(page.locator('text=Client Call — Website Redesign')).toBeVisible();
+    await expect(page.locator('text=Weekly Team Standup')).not.toBeVisible();
 
     // Clear search
     await searchInput.fill('');
-    await expect(page.locator('text=Nuvali Commercial Lot')).toBeVisible();
+    await expect(page.locator('text=Weekly Team Standup')).toBeVisible();
 
     // Channel filter test
-    await page.locator('[data-testid="channel-broker-network-btn"]').click();
-    await expect(page.locator('text=Nuvali Commercial Lot')).toBeVisible();
-    await expect(page.locator('text=Shang Residences BGC')).not.toBeVisible();
+    await page.locator('[data-testid="channel-client-calls-btn"]').click();
+    await expect(page.locator('text=Client Call — Website Redesign')).toBeVisible();
+    await expect(page.locator('text=Weekly Team Standup')).not.toBeVisible();
 
     // Reset to all
     await page.locator('button:has-text("All (")').click();
-    await expect(page.locator('text=Shang Residences BGC')).toBeVisible();
+    await expect(page.locator('text=Weekly Team Standup')).toBeVisible();
   });
 
   test('2. Face-to-Face Meeting Recording Flow: template selection, off-the-record toggle, and note generation', async ({
@@ -51,10 +51,10 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
 
     // Fill Title
     const titleInput = page.locator('[data-testid="record-modal-title-input"]');
-    await titleInput.fill('Aurelia Residences BGC — Client Property Discovery');
+    await titleInput.fill('Client Call — Website Redesign Review');
 
     // Select Template
-    await page.locator('[data-testid="record-modal-template-select"]').selectOption('client-discovery');
+    await page.locator('[data-testid="record-modal-template-select"]').selectOption('client-call');
 
     // Select Language (Filipino)
     await page.locator('[data-testid="record-modal-language-select"]').selectOption('fil-PH');
@@ -81,15 +81,15 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
 
     // Should navigate into the Meeting Detail View
     await expect(page.locator('[data-testid="meeting-detail-view"]')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('[data-testid="detail-meeting-title"]')).toContainText('Aurelia Residences BGC');
+    await expect(page.locator('[data-testid="detail-meeting-title"]')).toContainText('Client Call');
 
-    // Verify Real Estate Deal Brief Card is displayed
-    await expect(page.locator('text=Real Estate Deal Parameters & Brief')).toBeVisible();
-    await expect(page.locator('text=Target Budget / TCP')).toBeVisible();
+    // Verify General Executive Overview and Discussion Points are displayed (general meeting without deal brief)
+    await expect(page.locator('text=Executive Overview')).toBeVisible();
+    await expect(page.locator('text=Key Discussion Points')).toBeVisible();
 
     // Back to library
     await page.locator('[data-testid="detail-back-btn"]').click();
-    await expect(page.locator('text=Aurelia Residences BGC — Client Property Discovery').first()).toBeVisible();
+    await expect(page.locator('text=Client Call — Website Redesign Review').first()).toBeVisible();
   });
 
   test('3. Audio File Upload Flow: processes audio file with AI diarization and summary', async ({
@@ -135,7 +135,7 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     await page.goto('/');
 
     // Click on seeded meeting
-    await page.locator('text=Shang Residences BGC').first().click();
+    await page.locator('text=Weekly Team Standup').first().click();
     await expect(page.locator('[data-testid="meeting-detail-view"]')).toBeVisible();
 
     // 1. Audio Player
@@ -147,8 +147,8 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     // 2. Transcript Tab
     await page.locator('[data-testid="tab-transcript-btn"]').click();
     await expect(page.locator('[data-testid="transcript-content"]')).toBeVisible();
-    await expect(page.locator('[data-testid="transcript-content"] span:has-text("Rad (BDM)")').first()).toBeVisible();
-    await expect(page.locator('[data-testid="transcript-content"] span:has-text("Atty. Marco Tan")').first()).toBeVisible();
+    await expect(page.locator('[data-testid="transcript-content"] span:has-text("Host")').first()).toBeVisible();
+    await expect(page.locator('[data-testid="transcript-content"] span:has-text("Alex Chen")').first()).toBeVisible();
 
     // 3. Action Items Tab
     await page.locator('[data-testid="tab-actions-btn"]').click();
@@ -160,18 +160,18 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
 
     // Add new action item
     await page.locator('[data-testid="add-action-item-btn"]').click();
-    await page.locator('[data-testid="new-action-title-input"]').fill('Follow up on bank pre-approval with BDO Private Bank');
+    await page.locator('[data-testid="new-action-title-input"]').fill('Follow up on release deployment checklist');
     await page.locator('[data-testid="save-new-action-btn"]').click();
-    await expect(page.locator('text=Follow up on bank pre-approval with BDO Private Bank')).toBeVisible();
+    await expect(page.locator('text=Follow up on release deployment checklist')).toBeVisible();
 
     // 4. Ask AI Tab
     await page.locator('[data-testid="tab-chat-btn"]').click();
     await expect(page.locator('[data-testid="chat-content"]')).toBeVisible();
 
-    // Click budget chip
-    await page.locator('button:has-text("Budget & Financing?")').click();
+    // Click Key Decisions chip
+    await page.locator('button:has-text("Key Decisions?")').click();
     await page.locator('[data-testid="chat-submit-btn"]').click();
-    await expect(page.locator('text=PHP 32M - PHP 40M')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=Key decisions made in this meeting')).toBeVisible({ timeout: 10000 });
 
     // 5. Copy Markdown verification
     await page.locator('[data-testid="copy-markdown-btn"]').click();
@@ -189,16 +189,16 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
 
     // Check tasks exist
     await expect(page.locator('text=Action Items Hub')).toBeVisible();
-    await expect(page.locator('text=Prepare official Tower 2 2BR computation sheet')).toBeVisible();
+    await expect(page.locator('text=Deploy v2.4 staging release and verify telemetry')).toBeVisible();
 
     // Filter by completed
     await page.locator('[data-testid="actions-status-filter"]').selectOption('completed');
-    await expect(page.locator('text=Send cadastral lot layout and zoning guideline PDF')).toBeVisible();
+    await expect(page.locator('text=Review Figma prototype and design tokens')).toBeVisible();
 
     // Filter by high priority
     await page.locator('[data-testid="actions-status-filter"]').selectOption('all');
     await page.locator('[data-testid="actions-priority-filter"]').selectOption('high');
-    await expect(page.locator('text=Submit top 5 LOI client endorsements')).toBeVisible();
+    await expect(page.locator('text=Deploy v2.4 staging release and verify telemetry')).toBeVisible();
   });
 
   test('6. Real Estate Templates View: browse templates and launch with template pre-selected', async ({
@@ -257,7 +257,7 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     await page.goto('/');
 
     // Open seeded meeting
-    await page.locator('text=Shang Residences BGC').first().click();
+    await page.locator('text=Weekly Team Standup').first().click();
     await expect(page.locator('[data-testid="meeting-detail-view"]')).toBeVisible();
 
     // Switch to Agenda tab
@@ -271,9 +271,9 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
 
     // Add new agenda topic
     const newTopicInput = page.locator('[data-testid="new-agenda-item-input"]');
-    await newTopicInput.fill('Review Land Title Transfer & Tax Clearance');
+    await newTopicInput.fill('Review Sprint Velocity & Retro Items');
     await page.locator('[data-testid="add-agenda-item-btn"]').click();
-    await expect(page.locator('text=Review Land Title Transfer & Tax Clearance')).toBeVisible();
+    await expect(page.locator('text=Review Sprint Velocity & Retro Items')).toBeVisible();
 
     // Reorder: click move-up on the newly added item
     const moveUpBtns = page.locator('button[data-testid^="move-up-"]');
@@ -294,7 +294,7 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     await page.goto('/');
 
     // Open seeded meeting
-    await page.locator('text=Shang Residences BGC').first().click();
+    await page.locator('text=Weekly Team Standup').first().click();
     await expect(page.locator('[data-testid="meeting-detail-view"]')).toBeVisible();
 
     // Switch to Agenda tab
@@ -316,7 +316,7 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     await page.goto('/');
 
     // Open seeded meeting
-    await page.locator('text=Shang Residences BGC').first().click();
+    await page.locator('text=Weekly Team Standup').first().click();
     await expect(page.locator('[data-testid="meeting-detail-view"]')).toBeVisible();
 
     // Open Version History Modal
@@ -345,7 +345,7 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     await page.goto('/');
 
     // Open seeded meeting
-    await page.locator('text=Shang Residences BGC').first().click();
+    await page.locator('text=Weekly Team Standup').first().click();
     await expect(page.locator('[data-testid="meeting-detail-view"]')).toBeVisible();
 
     // Open Redaction Modal
@@ -353,9 +353,9 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     await expect(page.locator('[data-testid="redaction-modal"]')).toBeVisible();
 
     // Redact specific sensitive phrase
-    await page.locator('[data-testid="redaction-phrase-input"]').fill('Atty. Marco Tan');
+    await page.locator('[data-testid="redaction-phrase-input"]').fill('Alex Chen');
     await page.locator('[data-testid="apply-phrase-redaction-btn"]').click();
-    await expect(page.locator('text=Successfully redacted "Atty. Marco Tan"')).toBeVisible();
+    await expect(page.locator('text=Successfully redacted "Alex Chen"')).toBeVisible();
 
     // Sanitize automated PII patterns
     await page.locator('[data-testid="apply-pii-redaction-btn"]').click();
@@ -372,7 +372,7 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     await page.goto('/');
 
     // Open seeded meeting
-    await page.locator('text=Shang Residences BGC').first().click();
+    await page.locator('text=Weekly Team Standup').first().click();
     await expect(page.locator('[data-testid="meeting-detail-view"]')).toBeVisible();
 
     // Open Share & Integrations Modal
@@ -434,11 +434,11 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
       'PRODID:-//Tala AI//RFC 5545 Spec Test//EN',
       'BEGIN:VEVENT',
       'UID:e2e-event-999@tala.ai',
-      'SUMMARY:Aurelia Residences Penthouse Review',
+      'SUMMARY:Quarterly Product Roadmap Review',
       'DTSTART:20261025T090000Z',
       'DTEND:20261025T100000Z',
-      'LOCATION:BGC High Street, Taguig',
-      'DESCRIPTION:Executive review of Aurelia Residences luxury penthouse',
+      'LOCATION:Conference Room A',
+      'DESCRIPTION:Executive review of upcoming product release milestones',
       'END:VEVENT',
       'END:VCALENDAR',
     ].join('\n');
@@ -447,14 +447,14 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
 
     // Verify parsed event item appears
     await expect(page.locator('[data-testid="parsed-event-0"]')).toBeVisible();
-    await expect(page.locator('[data-testid="parsed-event-0"]').locator('text=Aurelia Residences Penthouse Review')).toBeVisible();
+    await expect(page.locator('[data-testid="parsed-event-0"]').locator('text=Quarterly Product Roadmap Review')).toBeVisible();
 
     // Confirm import
     await page.locator('[data-testid="confirm-import-calendar-btn"]').click();
     await expect(page.locator('[data-testid="calendar-import-modal"]')).not.toBeVisible();
 
     // Verify imported meeting is in library list
-    await expect(page.locator('text=Aurelia Residences Penthouse Review').first()).toBeVisible();
+    await expect(page.locator('text=Quarterly Product Roadmap Review').first()).toBeVisible();
   });
 
   test('15. Settings: Retention Auto-Purge, Cryptographic Hash-Chained Audit Trail, and Needs Keys Adapters', async ({
@@ -499,7 +499,7 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
     await expect(page.locator('[data-testid="meeting-recorder-modal"]')).toBeVisible();
 
     // Set meeting title
-    await page.locator('[data-testid="record-modal-title-input"]').fill('Harbor Park Residences Alignment');
+    await page.locator('[data-testid="record-modal-title-input"]').fill('Product Architecture Alignment');
 
     // Start Recording
     await page.locator('[data-testid="modal-start-recording-btn"]').click();
@@ -518,7 +518,7 @@ test.describe('Tala AI Meeting Notetaker — Phase 1 Acceptance Specs', () => {
 
     // Verify navigation into Meeting Detail View
     await expect(page.locator('[data-testid="meeting-detail-view"]')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('[data-testid="detail-meeting-title"]')).toContainText('Harbor Park Residences');
+    await expect(page.locator('[data-testid="detail-meeting-title"]')).toContainText('Product Architecture');
   });
 
   test('17. Composio Google Calendar Serverless Route (/api/calendar): off fallback, list upcoming events, link event to meeting, and create follow-up event via fake adapter', async ({

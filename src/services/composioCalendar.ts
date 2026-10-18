@@ -72,7 +72,7 @@ export function normalizeGoogleCalendarItem(raw: any): ComposioCalendarEvent {
     ? raw.attendees.map((a: any) =>
         typeof a === 'string' ? a : a?.displayName || a?.email || 'Guest'
       )
-    : ['Rad (BDM)'];
+    : ['Host'];
 
   return {
     id: String(raw?.id || `gcal-${Date.now()}`),
@@ -81,7 +81,7 @@ export function normalizeGoogleCalendarItem(raw: any): ComposioCalendarEvent {
     startTime: new Date(startMs || Date.now()).toISOString(),
     endTime: new Date(endMs || Date.now() + 45 * 60000).toISOString(),
     durationMinutes,
-    attendees: attendees.length > 0 ? attendees : ['Rad (BDM)'],
+    attendees: attendees.length > 0 ? attendees : ['Host'],
     location: raw?.location ? String(raw.location) : undefined,
     htmlLink: raw?.htmlLink ? String(raw.htmlLink) : undefined,
   };
@@ -258,7 +258,7 @@ export class FakeComposioCalendarAdapter implements ComposioToolkitAdapter {
       startTime: new Date(startMs).toISOString(),
       endTime: new Date(endMs).toISOString(),
       durationMinutes: input.durationMinutes,
-      attendees: input.attendees.length > 0 ? input.attendees : ['Rad (BDM)'],
+      attendees: input.attendees.length > 0 ? input.attendees : ['Host'],
       location: input.location,
       htmlLink: `https://calendar.google.com/calendar/event?eid=gcal-followup-${this.events.length + 1}`,
     };
@@ -302,11 +302,11 @@ export function linkCalendarEventToMeeting(
     title: event.title,
     createdAt: event.startTime,
     durationSeconds: (event.durationMinutes || 45) * 60,
-    channelId: 'residential-preselling',
-    channelName: 'Residential Pre-selling',
-    templateId: 'client-discovery',
-    templateName: 'Client Property Discovery',
-    participants: event.attendees.length > 0 ? event.attendees : ['Rad (BDM)'],
+    channelId: 'team-sync',
+    channelName: 'Team Syncs & Standups',
+    templateId: 'team-standup',
+    templateName: 'Team Standup',
+    participants: event.attendees.length > 0 ? event.attendees : ['Host'],
     language: 'fil-PH (Tagalog / English)',
     status: 'completed',
     calendarEventId: event.id,
@@ -337,7 +337,7 @@ export function linkCalendarEventToMeeting(
         meetingId,
         meetingTitle: event.title,
         title: `Prepare briefing deck for ${event.title}`,
-        assignee: event.attendees[0] || 'Rad (BDM)',
+        assignee: event.attendees[0] || 'Host',
         dueDate: event.startTime.split('T')[0] || new Date().toISOString().split('T')[0],
         status: 'todo',
         priority: 'high',
@@ -347,7 +347,7 @@ export function linkCalendarEventToMeeting(
     transcript: [
       {
         id: `utt-${Date.now()}-1`,
-        speaker: event.attendees[0] || 'Rad (BDM)',
+        speaker: event.attendees[0] || 'Host',
         text: `Meeting linked to Google Calendar event "${event.title}" (${new Date(
           event.startTime
         ).toLocaleString()}).`,
