@@ -2,6 +2,18 @@ import { openDB } from 'idb';
 import type { DBSchema, IDBPDatabase } from 'idb';
 import type { Meeting, Channel, ActionItem, TalaSettings, NoteVersion, AuditLogEntry } from '../types';
 import { DEFAULT_LANGUAGE_CODE } from '../languages/languages';
+import {
+  cloudEnabled,
+  pullCloud,
+  pushAll,
+  mirrorMeeting,
+  mirrorActionItem,
+  mirrorMeetingDeleted,
+  mirrorChannel,
+  mirrorSettings,
+  mirrorNoteVersion,
+  mirrorAuditLog,
+} from './cloud';
 
 interface TalaDB extends DBSchema {
   meetings: {
@@ -153,6 +165,53 @@ export async function initStorage(): Promise<void> {
   if (meetingCount === 0) {
     await seedInitialDemoMeetings();
   }
+
+  // Cloud sync (Supabase): pull remote, merge into IndexedDB, then push
+  // any local-only rows so a fresh device backfills the cloud copy.
+  if (cloudEnabled()) {
+    const delta = await pullCloud();
+    if (delta) {
+      const byId = new Map<string, Meeting>();
+      const localMeetings = await db.getAll('meetings');
+      for (const m of localMeetings) byId.set(m.id, m);
+      let merged = 0;
+      for (const remote of delta.meetings) {
+        if (!remote || typeof remote.id !== 'string') continue;
+        if (!byId.has(remote.id)) {
+          byId.set(remote.id, remote);
+          await db.put('meetings', remote);
+          merged++;
+        }
+      }
+      const localItemIds = new Set(
+        (await db.getAll('actionItems')).map((a) => a.id),
+      );
+      for (const remote of delta.actionItems) {
+        if (!remote || typeof remote.id !== 'string') continue;
+        if (!localItemIds.has(remote.id)) {
+          await db.put('actionItems', remote);
+        }
+      }
+      const localChannelIds = new Set(
+        (await db.getAll('channels')).map((c) => c.id),
+      );
+      for (const remote of delta.channels) {
+        if (!remote || typeof remote.id !== 'string') continue;
+        if (!localChannelIds.has(remote.id)) {
+          await db.put('channels', remote);
+        }
+      }
+      // Backfill cloud when it has no meetings but local does (first sync).
+      if (delta.meetings.length === 0 && byId.size > 0) {
+        const currentSettings =
+          (await db.get('settings', 'current')) || DEFAULT_SETTINGS;
+        await pushAll([...byId.values()], await db.getAll('channels'), currentSettings);
+      }
+      if (merged > 0) {
+        console.info(`[tala-cloud] merged ${merged} remote meeting(s)`);
+      }
+    }
+  }
 }
 
 export async function getAllMeetings(): Promise<Meeting[]> {
@@ -177,6 +236,7 @@ export async function saveMeeting(meeting: Meeting): Promise<void> {
   }
 
   await tx.done;
+  mirrorMeeting(meeting);
 }
 
 export async function deleteMeeting(id: string): Promise<void> {
@@ -193,6 +253,7 @@ export async function deleteMeeting(id: string): Promise<void> {
   }
 
   await tx.done;
+  mirrorMeetingDeleted(id);
 }
 
 export async function getAllChannels(): Promise<Channel[]> {
@@ -203,6 +264,7 @@ export async function getAllChannels(): Promise<Channel[]> {
 export async function saveChannel(channel: Channel): Promise<void> {
   const db = await getDb();
   await db.put('channels', channel);
+  mirrorChannel(channel);
 }
 
 export async function getAllActionItems(): Promise<ActionItem[]> {
@@ -220,6 +282,7 @@ export async function updateActionItemStatus(
 
   item.status = status;
   await db.put('actionItems', item);
+  mirrorActionItem(item);
 
   // Update in meeting record too
   const meeting = await db.get('meetings', item.meetingId);
@@ -228,6 +291,7 @@ export async function updateActionItemStatus(
     if (target) {
       target.status = status;
       await db.put('meetings', meeting);
+      mirrorMeeting(meeting);
     }
   }
 }
@@ -241,11 +305,13 @@ export async function getSettings(): Promise<TalaSettings> {
 export async function saveSettings(settings: TalaSettings): Promise<void> {
   const db = await getDb();
   await db.put('settings', settings, 'current');
+  mirrorSettings(settings);
 }
 
 export async function saveAuditLog(entry: AuditLogEntry): Promise<void> {
   const db = await getDb();
   await db.put('auditLogs', entry);
+  mirrorAuditLog(entry);
 }
 
 export async function getAllAuditLogs(): Promise<AuditLogEntry[]> {
@@ -257,6 +323,7 @@ export async function getAllAuditLogs(): Promise<AuditLogEntry[]> {
 export async function saveNoteVersion(version: NoteVersion): Promise<void> {
   const db = await getDb();
   await db.put('versions', version);
+  mirrorNoteVersion(version);
 
   // Also sync in meeting record
   const meeting = await db.get('meetings', version.meetingId);
