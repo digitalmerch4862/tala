@@ -201,11 +201,18 @@ export async function initStorage(): Promise<void> {
           await db.put('channels', remote);
         }
       }
-      // Backfill cloud when it has no meetings but local does (first sync).
-      if (delta.meetings.length === 0 && byId.size > 0) {
+      // Backfill: push any local rows the cloud is missing (covers first
+      // sync AND a previous partial push that was aborted mid-flight).
+      const cloudIds = new Set(delta.meetings.map((m) => m.id));
+      const missing = [...byId.values()].filter((m) => !cloudIds.has(m.id));
+      const cloudChannelIds = new Set(delta.channels.map((c) => c.id));
+      const missingChannels = (await db.getAll('channels')).filter(
+        (c) => !cloudChannelIds.has(c.id),
+      );
+      if (missing.length > 0 || missingChannels.length > 0 || !delta.settings) {
         const currentSettings =
           (await db.get('settings', 'current')) || DEFAULT_SETTINGS;
-        await pushAll([...byId.values()], await db.getAll('channels'), currentSettings);
+        await pushAll(missing, missingChannels, currentSettings);
       }
       if (merged > 0) {
         console.info(`[tala-cloud] merged ${merged} remote meeting(s)`);

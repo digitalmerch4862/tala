@@ -210,6 +210,7 @@ export async function pushAll(
   settings: TalaSettings,
 ): Promise<void> {
   if (!cloudEnabled()) return;
+  // Each step independently guarded: a failure in one must not skip the rest.
   try {
     if (meetings.length > 0) {
       await req('tala_meetings', {
@@ -225,24 +226,32 @@ export async function pushAll(
           })),
         ),
       });
-      const items = meetings.flatMap((m) => m.actionItems);
-      if (items.length > 0) {
-        await req('tala_action_items', {
-          method: 'POST',
-          prefer: 'resolution=merge-duplicates',
-          body: JSON.stringify(
-            items.map((i) => ({
-              id: i.id,
-              meeting_id: i.meetingId,
-              status: i.status,
-              created_at: iso(i.createdAt),
-              updated_at: new Date().toISOString(),
-              data: i,
-            })),
-          ),
-        });
-      }
     }
+  } catch (err) {
+    console.warn('[tala-cloud] meetings push failed', err);
+  }
+  try {
+    const items = meetings.flatMap((m) => m.actionItems);
+    if (items.length > 0) {
+      await req('tala_action_items', {
+        method: 'POST',
+        prefer: 'resolution=merge-duplicates',
+        body: JSON.stringify(
+          items.map((i) => ({
+            id: i.id,
+            meeting_id: i.meetingId,
+            status: i.status,
+            created_at: iso(i.createdAt),
+            updated_at: new Date().toISOString(),
+            data: i,
+          })),
+        ),
+      });
+    }
+  } catch (err) {
+    console.warn('[tala-cloud] action items push failed', err);
+  }
+  try {
     if (channels.length > 0) {
       await req('tala_channels', {
         method: 'POST',
@@ -250,8 +259,12 @@ export async function pushAll(
         body: JSON.stringify(channels.map((c) => ({ id: c.id, data: c }))),
       });
     }
+  } catch (err) {
+    console.warn('[tala-cloud] channels push failed', err);
+  }
+  try {
     await mirrorSettings(settings);
   } catch (err) {
-    console.warn('[tala-cloud] push failed', err);
+    console.warn('[tala-cloud] settings push failed', err);
   }
 }
