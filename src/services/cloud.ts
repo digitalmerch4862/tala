@@ -206,6 +206,7 @@ export async function pullCloud(): Promise<CloudDelta | null> {
 /** Push the full local dataset (initial migration / new device backfill). */
 export async function pushAll(
   meetings: Meeting[],
+  actionItems: ActionItem[],
   channels: Channel[],
   settings: TalaSettings,
 ): Promise<void> {
@@ -231,7 +232,9 @@ export async function pushAll(
     console.warn('[tala-cloud] meetings push failed', err);
   }
   try {
-    const items = meetings.flatMap((m) => m.actionItems);
+    const items = actionItems.length > 0
+      ? actionItems
+      : meetings.flatMap((m) => m.actionItems);
     if (items.length > 0) {
       await req('tala_action_items', {
         method: 'POST',

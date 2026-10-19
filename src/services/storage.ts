@@ -205,14 +205,23 @@ export async function initStorage(): Promise<void> {
       // sync AND a previous partial push that was aborted mid-flight).
       const cloudIds = new Set(delta.meetings.map((m) => m.id));
       const missing = [...byId.values()].filter((m) => !cloudIds.has(m.id));
+      const cloudItemIds = new Set(delta.actionItems.map((a) => a.id));
+      const missingItems = (await db.getAll('actionItems')).filter(
+        (a) => !cloudItemIds.has(a.id),
+      );
       const cloudChannelIds = new Set(delta.channels.map((c) => c.id));
       const missingChannels = (await db.getAll('channels')).filter(
         (c) => !cloudChannelIds.has(c.id),
       );
-      if (missing.length > 0 || missingChannels.length > 0 || !delta.settings) {
+      if (
+        missing.length > 0 ||
+        missingItems.length > 0 ||
+        missingChannels.length > 0 ||
+        !delta.settings
+      ) {
         const currentSettings =
           (await db.get('settings', 'current')) || DEFAULT_SETTINGS;
-        await pushAll(missing, missingChannels, currentSettings);
+        await pushAll(missing, missingItems, missingChannels, currentSettings);
       }
       if (merged > 0) {
         console.info(`[tala-cloud] merged ${merged} remote meeting(s)`);
